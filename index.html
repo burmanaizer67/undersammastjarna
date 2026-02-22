@@ -2133,6 +2133,1050 @@ Under samma stjärna hörde de ihop.`
 
     .app{
       width:min(900px, 100%);
+      display:none;
+      grid-template-columns: 1fr;
+      gap:16px;
+      position:relative;
+      z-index:2;
+      margin: 0 auto 16px;
+    }
+    
+    .app.visible{
+      display: grid;
+    }
+
+    .card{
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+      padding:28px;
+      aspect-ratio: var(--page-ar);
+      display:flex;
+      flex-direction:column;
+    }
+
+    .storyContent{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .chapterMedia{
+      border-radius: calc(var(--radius) - 6px);
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.03);
+      padding:18px;
+      display:flex;
+      align-items:flex-start;
+      position:relative;
+      overflow:hidden;
+      aspect-ratio: var(--page-ar);
+      box-shadow: 0 14px 30px rgba(0,0,0,.25);
+    }
+
+    .chapterMedia.hasImage{
+      background-image: var(--chapter-image);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-color: rgba(0,0,0,.08);
+    }
+
+    .chapterMedia.hasImage.whiteBands{
+      background-color: #fff;
+      background-image:
+        linear-gradient(180deg, #fff 0 12%, rgba(255,255,255,0) 12% 88%, #fff 88% 100%),
+        var(--chapter-image);
+      background-size: 100% 100%, contain;
+      background-repeat: no-repeat, no-repeat;
+      background-position: center, center;
+    }
+
+    .chapterMedia:not(.hasImage){
+      aspect-ratio: auto;
+      padding:0;
+      border:none;
+      box-shadow:none;
+      background: transparent;
+    }
+
+    .chapterOverlay{
+      width:min(70%, 520px);
+      padding:14px 16px;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      backdrop-filter: none;
+    }
+
+
+    .chapterMedia.hasImage .chapterOverlay{
+      position:absolute;
+      top:16px;
+      left:16px;
+    }
+
+    .chapterMedia.hasImage.whiteBands .chapterOverlay{
+      top:6px;
+      left:8px;
+      right:8px;
+      width:auto;
+      text-align:center;
+      color:#0b1020;
+      text-shadow:none;
+    }
+
+    .chapterMedia.hasImage.whiteBands .text{
+      color:#0b1020;
+      text-shadow:none;
+    }
+
+    .chapterMedia.tightLines .text{
+      line-height: 1.15;
+    }
+
+    .chapterMedia.hasImage .chapterOverlay.right{
+      left:auto;
+      right:0;
+      width: min(55%, 420px);
+      text-align: right;
+    }
+
+    .chapterBottom{
+      position:absolute;
+      left:16px;
+      bottom:16px;
+      width:min(70%, 520px);
+      white-space: pre-wrap;
+    }
+
+    .chapterMedia.hasImage.whiteBands .chapterBottom{
+      left:8px;
+      right:8px;
+      bottom:6px;
+      width:auto;
+      text-align:center;
+      color:#0b1020;
+      text-shadow:none;
+    }
+
+    .chapterMedia.tightLines .chapterBottom{
+      line-height: 1.15;
+    }
+
+    .chapterMedia.hasImage .text{
+      color: rgba(255,255,255,.95);
+    }
+
+    .chapterMedia:not(.hasImage) .chapterOverlay{
+      width:auto;
+      padding:0;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      backdrop-filter: none;
+      position: static;
+    }
+
+    .chapterMedia:not(.hasImage) .chapterBottom{
+      position: static;
+      width:auto;
+      display:none;
+    }
+
+    .coverPage{
+      width:min(900px, 100%);
+      margin:0 auto 16px;
+      display: block;
+    }
+    
+    .coverPage.hidden{
+      display: none;
+    }
+    .coverFrame{
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+      padding:28px;
+      aspect-ratio: var(--page-ar);
+      position:relative;
+      background-color: rgba(0,0,0,.12);
+    }
+    .coverImg{
+      width:100%;
+      height:100%;
+      object-fit: contain;
+      object-position: center;
+      border-radius: calc(var(--radius) - 6px);
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 14px 30px rgba(0,0,0,.25);
+      display:block;
+    }
+    .coverOverlay{
+      position:absolute;
+      inset: auto 18px 18px 18px;
+      padding:12px 14px 14px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.55));
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(6px);
+    }
+    .coverTitle{
+      font-size: 30px;
+      margin:0 0 6px;
+      letter-spacing:.3px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .coverSubtitle{
+      font-size: 14px;
+      color: var(--muted);
+      margin:0 0 12px;
+      font-weight: 400;
+    }
+    .coverCta{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.07);
+      color: rgba(255,255,255,.92);
+      text-decoration:none;
+      transition: all .2s ease;
+    }
+    .coverCta:hover{
+      background: rgba(255,255,255,.11);
+      border-color: rgba(255,255,255,.26);
+    }
+    .coverCta:active{ transform: translateY(1px); }
+
+    @media (max-width: 600px){
+      :root{
+        --fs: 16px;
+        --page-ar: auto;
+      }
+      
+      body{
+        padding: 12px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+      }
+      
+      .app{
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      
+      .card{ 
+        padding: 16px;
+        aspect-ratio: auto;
+      }
+      
+      .coverPage{
+        margin-bottom: 12px;
+      }
+      
+      .coverFrame{ 
+        padding: 12px;
+        aspect-ratio: auto;
+      }
+      
+      .coverImg{
+        max-height: 400px;
+        border-radius: calc(var(--radius) - 4px);
+      }
+      
+      .coverTitle{ 
+        font-size: 24px;
+      }
+      
+      .coverSubtitle{
+        font-size: 13px;
+      }
+      
+      .coverOverlay{ 
+        inset: auto 10px 10px 10px;
+        padding: 10px 12px;
+      }
+      
+      h1, .story-title, .titleInImage {
+        font-size: 22px;
+        margin-bottom: 12px;
+      }
+      
+      .subtitle{
+        font-size: 13px;
+        margin-bottom: 12px;
+      }
+      
+      .chapterMedia{
+        border-radius: calc(var(--radius) - 4px);
+        padding: 12px;
+        aspect-ratio: auto;
+        min-height: 300px;
+      }
+      
+      .chapterOverlay{
+        padding: 10px;
+        width: 100%;
+        max-width: none;
+      }
+      
+      .chapterOverlay.right{
+        width: 100%;
+        text-align: left;
+      }
+      
+      .chapterBottom{
+        width: 100%;
+        max-width: none;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        padding: 8px 0;
+      }
+      
+      .chapterMedia.hasImage .chapterOverlay{
+        top: 10px;
+        left: 10px;
+        right: 10px;
+      }
+      
+      .chapterMedia.hasImage.whiteBands .chapterOverlay{
+        top: 4px;
+        left: 6px;
+        right: 6px;
+      }
+      
+      .chapterMedia.hasImage.whiteBands .chapterBottom{
+        left: 6px;
+        right: 6px;
+        bottom: 4px;
+      }
+      
+      .controls{
+        gap: 8px;
+        flex-direction: column;
+        margin-top: auto;
+      }
+      
+      button{
+        padding: 12px 16px;
+        font-size: 14px;
+        width: 100%;
+        border-radius: 10px;
+        min-height: 44px;
+      }
+      
+      .text{
+        font-size: 16px;
+        line-height: 1.75;
+        margin-bottom: 16px;
+      }
+    }
+
+    h1{
+      font-size: 28px;
+      margin:0 0 20px;
+      letter-spacing:.2px;
+    }
+
+    .story-title{
+      font-size: 32px;
+      margin:0 0 10px;
+      letter-spacing:.3px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .titleInImage{
+      font-size: 22px;
+      margin: 0 0 10px;
+      letter-spacing: .2px;
+      font-weight: 700;
+      color: rgba(255,255,255,.95);
+      text-shadow: 0 2px 8px rgba(0,0,0,.55);
+    }
+
+    .chapterMedia.hasImage.whiteBands .titleInImage{
+      color:#0b1020;
+      text-shadow:none;
+    }
+
+    .subtitle{
+      font-size: 14px;
+      color: var(--muted);
+      margin:0 0 16px;
+      font-weight: 400;
+    }
+
+    .text{
+      font-size: var(--fs);
+      line-height: 1.8;
+      color: rgba(255,255,255,.92);
+      margin:0 0 24px;
+      white-space: pre-wrap;
+    }
+
+    .controls{
+      display: none !important;
+    }
+
+    button{
+      font-family: var(--font);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.07);
+      color: rgba(255,255,255,.92);
+      padding:10px 14px;
+      cursor:pointer;
+      transition: all .2s ease;
+    }
+
+    button:hover{
+      background: rgba(255,255,255,.11);
+      border-color: rgba(255,255,255,.26);
+    }
+
+    button:active{ transform: translateY(1px); }
+
+    button.primary{
+      background: linear-gradient(180deg, rgba(124,247,198,.20), rgba(124,247,198,.10));
+      border-color: rgba(124,247,198,.35);
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom:16px;
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      
+      .coverPage {
+        display: none;
+      }
+      
+      .app {
+        gap: 0;
+        margin: 0;
+      }
+      
+      .card, .coverFrame {
+        background: white;
+        border: none;
+        box-shadow: none;
+        backdrop-filter: none;
+        padding: 0;
+        page-break-after: always;
+        break-after: page;
+      }
+      
+      .storyContent {
+        gap: 0;
+      }
+      
+      h1, .story-title, .titleInImage {
+        color: #000;
+        text-shadow: none;
+        background: none;
+        -webkit-background-clip: unset;
+        -webkit-text-fill-color: unset;
+        background-clip: unset;
+      }
+      
+      .text, .subtitle {
+        color: #000;
+        text-shadow: none;
+      }
+      
+      .chapterMedia {
+        border: none;
+        background: white;
+        box-shadow: none;
+        padding: 0;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      
+      .chapterMedia.hasImage {
+        background-color: white;
+      }
+      
+      .chapterMedia.hasImage.whiteBands {
+        background-color: white;
+        background-image: none;
+      }
+      
+      .chapterOverlay {
+        background: transparent;
+        border: none;
+        backdrop-filter: none;
+      }
+      
+      .chapterMedia.hasImage .chapterOverlay {
+        position: static;
+        backdrop-filter: none;
+      }
+      
+      .chapterBottom {
+        position: static;
+        color: #000;
+        text-shadow: none;
+      }
+      
+      .controls {
+        display: none;
+      }
+      
+      button, .coverCta {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="coverPage" aria-label="Omslag">
+    <div class="coverFrame">
+      <img class="coverImg" src="Sagobilder/UnderSammaStjärna.png" alt="Omslagsbild: Under samma Stjärna" />
+      <div class="coverOverlay">
+        <h1 class="coverTitle">Under samma Stjärna</h1>
+        <p class="coverSubtitle">En saga om Malte och Märta</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="app" id="story">
+    <div class="card">
+      <div class="storyContent">
+        <h1 id="title">Malte får en hemlig gåva</h1>
+        <div class="chapterMedia" id="chapterMedia">
+          <div class="chapterOverlay" id="chapterOverlay">
+            <div class="text" id="text"></div>
+          </div>
+          <div class="text chapterBottom" id="chapterBottom"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chapters = [
+  {
+    title: "Malte får en hemlig gåva",
+    image: "Sagobilder/Hemligheten.png",
+    titleInImage: true,
+    text: `Malte var fyra år och tyckte allra mest om att vara nära mamma och pappa.
+
+En dag satte sig mamma bredvid honom och sa med en hemlighetsfull röst:
+"Vi ska få något alldeles speciellt. En liten hemlig gåva."
+
+"En leksak?" frågade Malte och kände hur det pirrade av nyfikenhet.
+
+"Ännu bättre," sa pappa och log varmt.
+"Du ska få en lillasyster."`
+  },
+  {
+    title: "Tankar i mörkret",
+    image: "Sagobilder/Tankar.png",
+    overlay: "right",
+    titleInImage: true,
+    text: `På kvällen ville Malte inte somna.
+
+Han låg i sin säng och tänkte:
+"Kommer jag att tycka om henne?
+Kommer hon att tycka om mig?
+Kan jag bli en bra storebror?"
+
+Genom fönstret såg han månen.
+Den lyste stilla — som om den visste något som Malte ännu inte visste.`
+  },
+  {
+    title: "En ny stjärna föds",
+    image: "Sagobilder/NewStar.png",
+    bottomLines: 3,
+    titleInImage: true,
+    text: `En dag sa mamma och pappa:
+"Nu har din lillasyster kommit."
+
+Malte fick träffa henne.
+
+Märta var liten. Väldigt liten.
+
+Hon hade varma små händer och mjuka kinder.
+När hon höll hans finger kändes det tryggt.
+
+"Jag är din storebror," sa Malte tyst.`
+  },
+  {
+    title: "Första hjälpen",
+    image: "Sagobilder/Syskonkärlek.png",
+    titleInImage: true,
+    text: `På natten hördes små ljud från Märta.
+
+Malte gick tyst fram till hennes säng.
+
+Han tog hennes lilla hand och sjöng mjukt:
+"Blinka lilla stjärna…"
+
+Rummet blev lugnt.
+
+Märta andades stilla.
+
+Malte satt kvar en stund och viskade:
+"Jag ska alltid skydda dig. Jag är din storebror."`
+  },
+  {
+    title: "Kärleken växer",
+    image: "Sagobilder/Lillasyster.png",
+    bottomLines: 3,
+    titleInImage: true,
+    text: `Ibland behövde Märta hjälp, för hon var fortfarande liten.
+
+Malte plockade upp hennes leksak och gav den tillbaka.
+
+Hon skrattade.
+
+Malte skrattade också.
+
+Det kändes bra att hjälpa.
+Det kändes bra att vara storebror.
+
+Och Malte tänkte på hur det hade varit förut —
+när det bara var han och mamma och pappa.
+
+Nu var han inte längre ensam.
+
+Nu var de fler.
+Nu fanns Märta också.
+
+Och som storebror och lillasyster hörde de alltid ihop —
+under samma stjärna.`
+  },
+  {
+    title: "Början på något nytt",
+    image: "Sagobilder/Duåjag.png",
+    titleInImage: true,
+    bottomLines: 1,
+    bottomBold: true,
+    text: `Snart skulle Malte börja skolan.
+
+Han kände sig lite orolig.
+
+"Tänk om det är svårt?
+Tänk om jag inte hittar?"
+
+Märta tog hans hand.
+
+Malte kände hur lugnet kom tillbaka.
+
+"Du klarar det," verkade hon säga.
+
+Och plötsligt kändes allt lite lättare.`
+  },
+  {
+    title: "När Märta var sjuk",
+    image: "Sagobilder/Mamma.png",
+    titleInImage: true,
+    whiteBands: true,
+    tightLines: true,
+    topText: `En dag var Märta varm i pannan.
+
+Mamma och pappa bar henne mycket och pratade med mjuka röster.
+
+Malte stod i dörren och tittade. Han kände sig orolig. Märta hade feber. Malte tänkte mycket. Han ville att hon skulle bli frisk.
+Och han önskade att mamma skulle hålla honom också.`,
+    bottomText: `Förut var det ju bara han.
+
+Men mamma drog honom nära.
+
+"Vi är här tillsammans," sa hon.
+
+När Malte fick hålla Märtas lilla hand kände han hur hon tryckte tillbaka.
+
+Och han förstod att ibland behöver man mer hjälp —
+och att kärleken räcker till alla.`,
+    text: `En dag var Märta varm i pannan.
+
+Mamma och pappa bar henne mycket och pratade med mjuka röster.
+
+Malte stod i dörren och tittade.
+
+Han kände sig orolig.
+
+Märta hade feber.
+
+Malte tänkte mycket. Han ville att hon skulle bli frisk.
+Och han önskade att mamma skulle hålla honom också.
+
+Förut var det ju bara han.
+
+Men mamma drog honom nära.
+
+"Vi är här tillsammans," sa hon.
+
+När Malte fick hålla Märtas lilla hand kände han hur hon tryckte tillbaka.
+
+Och han förstod att ibland behöver man mer hjälp —
+och att kärleken räcker till alla.`
+  },
+  {
+    title: "Storebror och lillasyster",
+    image: "Sagobilder/Sommarbarn.png",
+    titleInImage: true,
+    text: `Dagarna fortsatte, och Märta växte.
+
+Malte visade henne många saker —
+hur man vågar prova,
+hur man lär sig,
+och hur man alltid kan börja om.
+
+Tillsammans upptäckte de världen.
+
+Under samma stjärna hörde de ihop.`
+  }
+];
+
+    const el = (id) => document.getElementById(id);
+    const title = el("title");
+    const text = el("text");
+    const chapterMedia = el("chapterMedia");
+    const chapterBottom = el("chapterBottom");
+    const storyContent = document.querySelector(".storyContent");
+    const swipeSurface = document.querySelector("#story .card");
+    const coverPage = document.querySelector(".coverPage");
+    const appSection = document.querySelector("#story");
+
+    let idx = 0;
+    let lastSwipeAt = 0;
+    let pointerStartX = 0;
+    let pointerStartY = 0;
+    let pointerActive = false;
+    let storyStarted = false;
+
+    const SWIPE_THRESHOLD = 60;
+    const SWIPE_COOLDOWN = 450;
+    
+    function startStory(){
+      if(storyStarted) return;
+      storyStarted = true;
+      coverPage.classList.add("hidden");
+      appSection.classList.add("visible");
+      render();
+    }
+
+    function stopSpeak(){
+      if("speechSynthesis" in window){
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function speakCurrent(){
+      stopSpeak();
+      if(!("speechSynthesis" in window)) {
+        alert("Uppläsning stöds inte i denna webbläsare.");
+        return;
+      }
+      const c = chapters[idx];
+      const utter = new SpeechSynthesisUtterance(c.title + ". " + c.text);
+      utter.lang = "sv-SE";
+      utter.rate = 0.75;
+      utter.pitch = 0.95;
+      utter.volume = 1.0;
+      
+      const voices = window.speechSynthesis.getVoices();
+      const swedishVoice = voices.find(v => v.lang.startsWith("sv")) || voices.find(v => v.lang.startsWith("en"));
+      if(swedishVoice) utter.voice = swedishVoice;
+      
+      window.speechSynthesis.speak(utter);
+    }
+
+    function goNext(){
+      if(idx === chapters.length - 1) return;
+      stopSpeak();
+      idx++;
+      render();
+    }
+
+    function goPrev(){
+      if(idx === 0) return;
+      stopSpeak();
+      idx--;
+      render();
+    }
+
+    function render(){
+      const c = chapters[idx];
+      chapterOverlay.classList.toggle("right", c.overlay === "right");
+      title.textContent = c.title;
+      if(c.titleInImage && c.image){
+        if(!chapterOverlay.contains(title)){
+          chapterOverlay.insertBefore(title, text);
+        }
+        title.classList.add("titleInImage");
+      } else {
+        if(!storyContent.contains(title)){
+          storyContent.insertBefore(title, chapterMedia);
+        }
+        title.classList.remove("titleInImage");
+      }
+      if(c.topText && c.bottomText){
+        text.textContent = c.topText;
+        chapterBottom.textContent = c.bottomText;
+        chapterBottom.style.display = "block";
+      } else if(c.image && c.bottomLines){
+        const lines = c.text.split("\n");
+        const nonEmptyIdx = lines
+          .map((line, i) => (line.trim() ? i : -1))
+          .filter(i => i !== -1);
+        const lastN = nonEmptyIdx.slice(-c.bottomLines);
+        const bottomText = lastN.map(i => lines[i]).join("\n");
+        lastN.forEach(i => { lines[i] = ""; });
+        const topText = lines.join("\n").trim();
+        text.textContent = topText;
+        chapterBottom.textContent = bottomText;
+        if(c.bottomBold){
+          chapterBottom.innerHTML = "";
+          const strong = document.createElement("strong");
+          strong.textContent = bottomText;
+          chapterBottom.appendChild(strong);
+        }
+        chapterBottom.style.display = "block";
+      } else if(c.image && idx === 0){
+        const lines = c.text.split("\n");
+        const nonEmptyIdx = lines
+          .map((line, i) => (line.trim() ? i : -1))
+          .filter(i => i !== -1);
+        const lastTwo = nonEmptyIdx.slice(-2);
+        const bottomText = lastTwo.map(i => lines[i]).join("\n");
+        lastTwo.forEach(i => { lines[i] = ""; });
+        const topText = lines.join("\n").trim();
+        text.textContent = topText;
+        chapterBottom.textContent = bottomText;
+        chapterBottom.style.display = "block";
+      } else {
+        text.textContent = c.text;
+        chapterBottom.textContent = "";
+        chapterBottom.style.display = "none";
+      }
+      if(c.image){
+        chapterMedia.style.setProperty("--chapter-image", `url(${c.image})`);
+        chapterMedia.classList.add("hasImage");
+        chapterMedia.classList.toggle("whiteBands", c.whiteBands === true);
+        chapterMedia.classList.toggle("tightLines", c.tightLines === true);
+      } else {
+        chapterMedia.style.removeProperty("--chapter-image");
+        chapterMedia.classList.remove("hasImage");
+        chapterMedia.classList.remove("whiteBands");
+        chapterMedia.classList.remove("tightLines");
+      }
+    }
+
+    window.addEventListener("keydown", (e)=>{
+      if(e.key === "ArrowLeft") goPrev();
+      if(e.key === "ArrowRight") goNext();
+      if(e.key.toLowerCase() === "l") speakCurrent();
+      if(e.key.toLowerCase() === "s") stopSpeak();
+    });
+
+    swipeSurface.addEventListener("wheel", (e)=>{
+      const now = Date.now();
+      if(now - lastSwipeAt < SWIPE_COOLDOWN) return;
+      if(Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      if(Math.abs(e.deltaX) < 40) return;
+      e.preventDefault();
+      lastSwipeAt = now;
+      if(e.deltaX > 0){
+        goNext();
+      } else {
+        goPrev();
+      }
+    }, { passive: false });
+
+    swipeSurface.addEventListener("pointerdown", (e)=>{
+      if(e.target.closest("button") || e.target.closest("a")) return;
+      pointerActive = true;
+      pointerStartX = e.clientX;
+      pointerStartY = e.clientY;
+      swipeSurface.setPointerCapture(e.pointerId);
+    });
+
+    swipeSurface.addEventListener("pointermove", (e)=>{
+      if(!pointerActive) return;
+      const dx = e.clientX - pointerStartX;
+      const dy = e.clientY - pointerStartY;
+      if(Math.abs(dx) < SWIPE_THRESHOLD) return;
+      if(Math.abs(dx) <= Math.abs(dy)) return;
+      pointerActive = false;
+      swipeSurface.releasePointerCapture(e.pointerId);
+      if(dx < 0){
+        goNext();
+      } else {
+        goPrev();
+      }
+    });
+
+    swipeSurface.addEventListener("pointerup", ()=>{ pointerActive = false; });
+    swipeSurface.addEventListener("pointercancel", ()=>{ pointerActive = false; });
+
+    // Klick för att bläddra
+    swipeSurface.addEventListener("click", (e) => {
+      if(!storyStarted) return;
+      const rect = swipeSurface.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const halfWidth = rect.width / 2;
+      
+      if(clickX < halfWidth){
+        goPrev();
+      } else {
+        goNext();
+      }
+    });
+    
+    // Touch för att bläddra (mobil)
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isSwiping = false;
+    
+    swipeSurface.addEventListener("touchstart", (e) => {
+      if(!storyStarted) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      isSwiping = false;
+    });
+    
+    swipeSurface.addEventListener("touchmove", (e) => {
+      if(!storyStarted) return;
+      const touchCurrentX = e.touches[0].clientX;
+      const touchCurrentY = e.touches[0].clientY;
+      const diffX = Math.abs(touchCurrentX - touchStartX);
+      const diffY = Math.abs(touchCurrentY - touchStartY);
+      
+      // Om horizontal swipe är större än vertical
+      if(diffX > diffY && diffX > 30){
+        isSwiping = true;
+        e.preventDefault(); // Förhindra scroll
+      }
+    }, { passive: false });
+    
+    swipeSurface.addEventListener("touchend", (e) => {
+      if(!storyStarted) return;
+      const touchEndX = e.changedTouches[0].clientX;
+      const diff = touchStartX - touchEndX;
+      
+      // Om det var en swipe
+      if(isSwiping && Math.abs(diff) > 50){
+        if(diff > 0){
+          goNext(); // Swipe left = nästa
+        } else {
+          goPrev(); // Swipe right = föregående
+        }
+      } 
+      // Om det var en kort tap
+      else if(Math.abs(diff) < 10){
+        const rect = swipeSurface.getBoundingClientRect();
+        const tapX = touchEndX - rect.left;
+        const halfWidth = rect.width / 2;
+        
+        if(tapX < halfWidth){
+          goPrev();
+        } else {
+          goNext();
+        }
+      }
+      
+      isSwiping = false;
+    });
+
+    // Omslag event listeners
+    coverPage.addEventListener("click", startStory);
+    coverPage.addEventListener("touchend", (e) => {
+      e.preventDefault();
+      startStory();
+    });
+    
+    // Keyboard shortcut för omslag
+    window.addEventListener("keydown", (e) => {
+      if(!storyStarted && (e.key === "Enter" || e.key === " ")){
+        e.preventDefault();
+        startStory();
+      }
+    });
+  </script>
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Under samma Stjärna – Malte och Märta</title>
+  <style>
+    :root{
+      --bg: #0b1020;
+      --card: rgba(255,255,255,.08);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --accent: #7cf7c6;
+      --accent2: #8ab4ff;
+      --warm: #ffd36a;
+      --shadow: 0 18px 45px rgba(0,0,0,.45);
+      --radius: 22px;
+      --font: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      --fs: 18px;
+      --page-ar: 2 / 3;
+      --veil: 0;
+      --glow: 1;
+    }
+
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(138,180,255,.35), transparent 55%),
+        radial-gradient(1000px 700px at 80% 30%, rgba(124,247,198,.22), transparent 55%),
+        radial-gradient(900px 600px at 50% 90%, rgba(255,255,255,.12), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:18px;
+      position:relative;
+      overflow-x:hidden;
+      padding-top:40px;
+      padding-bottom:40px;
+    }
+
+    .app{
+      width:min(900px, 100%);
       display:grid;
       grid-template-columns: 1fr;
       gap:16px;
