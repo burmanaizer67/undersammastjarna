@@ -58,7 +58,7 @@
       border: 1px solid rgba(255,255,255,.14);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      overflow:auto;
+      overflow:hidden;
       backdrop-filter: blur(10px);
       padding:28px;
       aspect-ratio: var(--page-ar);
@@ -437,10 +437,7 @@
     }
 
     .controls{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:auto;
+      display: none !important;
     }
 
     button{
@@ -588,13 +585,6 @@
             <div class="text" id="text"></div>
           </div>
           <div class="text chapterBottom" id="chapterBottom"></div>
-        </div>
-
-        <div class="controls">
-          <button id="prevBtn">← Föregående</button>
-          <button class="primary" id="nextBtn">Nästa →</button>
-          <button id="speakBtn">🔈 Läs upp</button>
-          <button id="stopBtn">⏹ Stoppa</button>
         </div>
       </div>
     </div>
@@ -784,10 +774,6 @@ Under samma stjärna hörde de ihop.`
     const chapterBottom = el("chapterBottom");
     const storyContent = document.querySelector(".storyContent");
     const swipeSurface = document.querySelector("#story .card");
-    const prevBtn = el("prevBtn");
-    const nextBtn = el("nextBtn");
-    const speakBtn = el("speakBtn");
-    const stopBtn = el("stopBtn");
 
     let idx = 0;
     let lastSwipeAt = 0;
@@ -892,9 +878,6 @@ Under samma stjärna hörde de ihop.`
         chapterBottom.textContent = "";
         chapterBottom.style.display = "none";
       }
-      prevBtn.disabled = idx === 0;
-      nextBtn.disabled = idx === chapters.length - 1;
-
       if(c.image){
         chapterMedia.style.setProperty("--chapter-image", `url(${c.image})`);
         chapterMedia.classList.add("hasImage");
@@ -908,16 +891,11 @@ Under samma stjärna hörde de ihop.`
       }
     }
 
-    prevBtn.addEventListener("click", goPrev);
-    nextBtn.addEventListener("click", goNext);
-    speakBtn.addEventListener("click", speakCurrent);
-    stopBtn.addEventListener("click", stopSpeak);
-
     window.addEventListener("keydown", (e)=>{
-      if(e.key === "ArrowLeft") prevBtn.click();
-      if(e.key === "ArrowRight") nextBtn.click();
-      if(e.key.toLowerCase() === "l") speakBtn.click();
-      if(e.key.toLowerCase() === "s") stopBtn.click();
+      if(e.key === "ArrowLeft") goPrev();
+      if(e.key === "ArrowRight") goNext();
+      if(e.key.toLowerCase() === "l") speakCurrent();
+      if(e.key.toLowerCase() === "s") stopSpeak();
     });
 
     swipeSurface.addEventListener("wheel", (e)=>{
@@ -962,3 +940,5 @@ Under samma stjärna hörde de ihop.`
 
     render();
   </script>
+
+  
