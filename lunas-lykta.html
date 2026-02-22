@@ -1,0 +1,971 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lunas Lykta – en barnsaga</title>
+  <meta name="description" content="En mjuk, magisk barnsaga i kapitel – med uppläsning, bokmärke och godnattläge." />
+  <style>
+    :root{
+      --bg: #0b1020;
+      --card: rgba(255,255,255,.08);
+      --card2: rgba(255,255,255,.12);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --accent: #7cf7c6;
+      --accent2:#8ab4ff;
+      --warm:#ffd36a;
+      --shadow: 0 18px 45px rgba(0,0,0,.45);
+      --radius: 22px;
+      --font: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      --fs: 18px;
+
+      /* godnatt-dim / glow */
+      --veil: 0;   /* 0..1 */
+      --glow: 1;   /* 0..1 */
+    }
+
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(138,180,255,.35), transparent 55%),
+        radial-gradient(1000px 700px at 80% 30%, rgba(124,247,198,.22), transparent 55%),
+        radial-gradient(900px 600px at 50% 90%, rgba(255,255,255,.12), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* ✨ Stjärnhimmel */
+    .stars{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity: calc(.85 - (var(--veil) * .35));
+      z-index:0;
+    }
+    .stars::before,
+    .stars::after{
+      content:"";
+      position:absolute;
+      inset:-20%;
+      background-image:
+        radial-gradient(2px 2px at 12% 18%, rgba(255,255,255,.55), transparent 55%),
+        radial-gradient(1.5px 1.5px at 24% 62%, rgba(255,255,255,.45), transparent 55%),
+        radial-gradient(1px 1px at 37% 31%, rgba(255,255,255,.35), transparent 55%),
+        radial-gradient(2px 2px at 48% 78%, rgba(255,255,255,.55), transparent 55%),
+        radial-gradient(1px 1px at 56% 22%, rgba(255,255,255,.35), transparent 55%),
+        radial-gradient(1.5px 1.5px at 69% 58%, rgba(255,255,255,.45), transparent 55%),
+        radial-gradient(1px 1px at 74% 12%, rgba(255,255,255,.30), transparent 55%),
+        radial-gradient(2px 2px at 86% 44%, rgba(255,255,255,.55), transparent 55%),
+        radial-gradient(1px 1px at 92% 80%, rgba(255,255,255,.35), transparent 55%);
+      background-size: 420px 420px;
+      animation: drift 26s linear infinite;
+      opacity:.7;
+    }
+    .stars::after{
+      background-size: 520px 520px;
+      animation-duration: 40s;
+      opacity:.55;
+      mix-blend-mode: screen;
+    }
+    @keyframes drift{
+      from{ transform: translate3d(0,0,0) rotate(0deg); }
+      to{ transform: translate3d(-4%, 3%, 0) rotate(1deg); }
+    }
+
+    /* 🌫 Godnatt-dimma */
+    .veil{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(1200px 700px at 30% 20%, rgba(0,0,0, calc(.10 + var(--veil)*.45)), transparent 65%),
+        radial-gradient(1000px 700px at 70% 30%, rgba(0,0,0, calc(.08 + var(--veil)*.40)), transparent 65%),
+        radial-gradient(900px 600px at 50% 90%, rgba(0,0,0, calc(.10 + var(--veil)*.45)), transparent 65%),
+        linear-gradient(180deg, rgba(0,0,0, calc(.08 + var(--veil)*.40)), rgba(0,0,0, calc(.10 + var(--veil)*.50)));
+      opacity: calc(var(--veil) * 1);
+      transition: opacity .6s ease;
+      z-index:1;
+    }
+
+    .app{
+      width:min(980px, 100%);
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:16px;
+      position:relative;
+      z-index:2;
+    }
+    @media (max-width: 900px){ .app{grid-template-columns: 1fr;} }
+
+    .card{
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    header{
+      padding:18px 18px 10px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .title{ display:flex; gap:12px; align-items:flex-start; }
+
+    /* 🏮 liten lykta */
+    .lantern{
+      width:40px;height:40px;flex:0 0 auto;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.35));
+      opacity: calc(.95 - var(--veil)*.15);
+    }
+    .lantern .glow{
+      opacity: calc(.80 * var(--glow));
+      transform-origin:center;
+      animation: flicker 2.6s ease-in-out infinite;
+    }
+    @keyframes flicker{
+      0%,100% { transform: scale(1); opacity: calc(.78 * var(--glow)); }
+      50% { transform: scale(1.02); opacity: calc(.92 * var(--glow)); }
+    }
+
+    .title h1{
+      font-size: clamp(22px, 2.2vw, 30px);
+      margin:0 0 4px;
+      letter-spacing:.2px;
+    }
+    .title p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.35;
+      font-size: 14px;
+    }
+
+    .chip{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      font-size: 12px;
+      user-select:none;white-space:nowrap;
+      opacity: calc(.95 - var(--veil)*.15);
+    }
+
+    .main{ padding: 0 18px 18px; }
+
+    .story{
+      padding:16px 16px 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: calc(var(--radius) - 6px);
+      position:relative;
+    }
+
+    .story:before{
+      content:"";
+      position:absolute;inset:-2px;
+      border-radius: calc(var(--radius) - 4px);
+      background: radial-gradient(900px 220px at 10% 0%, rgba(124,247,198,.18), transparent 70%),
+                  radial-gradient(900px 220px at 90% 0%, rgba(138,180,255,.18), transparent 70%);
+      pointer-events:none;
+      filter: blur(8px);
+      opacity: calc(.65 - var(--veil)*.25);
+      z-index:0;
+      transition: opacity .6s ease;
+    }
+    .story > *{ position:relative; z-index:1; }
+
+    .topRow{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      margin-bottom:10px;
+    }
+
+    .illuWrap{
+      width: 120px;
+      flex: 0 0 auto;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      overflow:hidden;
+      box-shadow: 0 16px 40px rgba(0,0,0,.25);
+      opacity: calc(1 - var(--veil)*.10);
+    }
+    .illu{
+      width:100%; height:100%;
+      display:block;
+    }
+
+    .chapterTitle{
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing:.25px;
+      margin: 0 0 10px;
+      color: rgba(255,255,255,.88);
+      opacity: calc(1 - var(--veil)*.10);
+    }
+
+    .text{
+      font-size: var(--fs);
+      line-height: 1.7;
+      color: rgba(255,255,255,.92);
+      opacity: calc(1 - var(--veil)*.10);
+    }
+    .text p{ margin: 0 0 12px; }
+    .text p:last-child{ margin-bottom:0; }
+
+    .controls{
+      display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;
+      opacity: calc(1 - var(--veil)*.05);
+    }
+
+    button, select{
+      font-family: var(--font);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.07);
+      color: rgba(255,255,255,.92);
+      padding:10px 12px;
+      cursor:pointer;
+      transition: transform .06s ease, background .2s ease, border-color .2s ease;
+    }
+    button:hover, select:hover{
+      background: rgba(255,255,255,.11);
+      border-color: rgba(255,255,255,.26);
+    }
+    button:active{ transform: translateY(1px); }
+    button.primary{
+      background: linear-gradient(180deg, rgba(124,247,198,.20), rgba(124,247,198,.10));
+      border-color: rgba(124,247,198,.35);
+    }
+    button.night{
+      background: linear-gradient(180deg, rgba(255,211,106,.18), rgba(255,211,106,.10));
+      border-color: rgba(255,211,106,.35);
+    }
+
+    .side{ padding: 0 18px 18px; }
+    .panel{
+      padding:16px;
+      background: linear-gradient(180deg, var(--card2), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: calc(var(--radius) - 6px);
+      opacity: calc(1 - var(--veil)*.05);
+    }
+
+    .panel h2{ margin:0 0 10px; font-size:16px; letter-spacing:.2px; }
+
+    .list{
+      display:flex; flex-direction:column; gap:8px;
+      margin: 0; padding: 0; list-style:none;
+    }
+    .list button{
+      text-align:left; width:100%;
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      padding:12px; border-radius: 14px;
+    }
+
+    .badge{
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(138,180,255,.14);
+      border: 1px solid rgba(138,180,255,.28);
+      color: rgba(255,255,255,.84);
+    }
+
+    .hint{ margin-top:12px; color: var(--muted); font-size: 13px; line-height:1.45; }
+    .footerNote{ margin-top: 12px; color: rgba(255,255,255,.62); font-size: 12px; }
+
+    /* 🌙 Slutskärm */
+    .endingOverlay{
+      position:absolute;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background:
+        radial-gradient(900px 500px at 50% 20%, rgba(255,211,106,.10), transparent 60%),
+        radial-gradient(900px 500px at 30% 80%, rgba(124,247,198,.10), transparent 60%),
+        rgba(0,0,0,.25);
+      backdrop-filter: blur(10px);
+      z-index:5;
+    }
+    .endingOverlay.show{ display:flex; }
+    .endingCard{
+      width:min(560px, 100%);
+      padding:18px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      box-shadow: 0 22px 55px rgba(0,0,0,.55);
+      text-align:center;
+    }
+    .endingCard h3{
+      margin: 6px 0 6px;
+      font-size: 22px;
+      letter-spacing:.2px;
+    }
+    .endingCard p{
+      margin:0 0 14px;
+      color: var(--muted);
+      line-height:1.5;
+    }
+    .endingButtons{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:center;
+    }
+    .moon{
+      width:78px;height:78px;margin:0 auto 6px;
+      filter: drop-shadow(0 16px 30px rgba(0,0,0,.35));
+    }
+
+    body.hicontrast{
+      --card: rgba(255,255,255,.10);
+      --card2: rgba(255,255,255,.16);
+      --text: rgba(255,255,255,.95);
+      --muted: rgba(255,255,255,.78);
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(138,180,255,.42), transparent 55%),
+        radial-gradient(1000px 700px at 80% 30%, rgba(124,247,198,.30), transparent 55%),
+        radial-gradient(900px 600px at 50% 90%, rgba(255,255,255,.16), transparent 60%),
+        #070b17;
+    }
+
+    @media print{
+      body{ background:#fff; color:#000; padding:0; }
+      .stars, .veil, .endingOverlay{ display:none !important; }
+      .app{ grid-template-columns: 1fr; width: 100%; }
+      .card{ box-shadow:none; border: none; border-radius:0; }
+      header, .side, .controls, .hint, .footerNote{ display:none !important; }
+      .story, .panel{ border:none; background:transparent; }
+      .text{ color:#000; font-size: 13pt; }
+      .chapterTitle{ color:#000; }
+      .illuWrap{ display:none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="veil" aria-hidden="true"></div>
+
+  <div class="app" id="app">
+    <section class="card">
+      <header>
+        <div class="title">
+          <svg class="lantern" viewBox="0 0 64 64" aria-hidden="true">
+            <circle class="glow" cx="32" cy="34" r="16" fill="rgba(255,211,106,.65)"/>
+            <circle class="glow" cx="32" cy="34" r="22" fill="rgba(255,211,106,.22)"/>
+            <path d="M22 16c0-6 20-6 20 0" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="2" stroke-linecap="round"/>
+            <path d="M24 16c0-3 16-3 16 0" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2" stroke-linecap="round"/>
+            <rect x="22" y="16" width="20" height="6" rx="3" fill="rgba(255,255,255,.28)"/>
+            <rect x="20" y="22" width="24" height="26" rx="8" fill="rgba(255,255,255,.14)" stroke="rgba(255,255,255,.30)"/>
+            <rect x="24" y="26" width="16" height="18" rx="6" fill="rgba(255,211,106,.22)" stroke="rgba(255,211,106,.35)"/>
+            <path d="M32 31c1 2 1 3 0 5" stroke="rgba(255,211,106,.85)" stroke-width="2" stroke-linecap="round"/>
+            <rect x="22" y="48" width="20" height="6" rx="3" fill="rgba(255,255,255,.22)"/>
+          </svg>
+
+          <div>
+            <h1>Lunas Lykta</h1>
+            <p>En varm, magisk barnsaga i kapitel – för kvällar, soffhörn och små äventyr.</p>
+          </div>
+        </div>
+
+        <div class="chip" id="statusChip">Kapitel <span id="chipNum">1</span> / <span id="chipTotal">6</span></div>
+      </header>
+
+      <div class="main">
+        <div class="story" aria-live="polite">
+          <div class="topRow">
+            <div class="illuWrap" aria-hidden="true">
+              <svg class="illu" id="illu" viewBox="0 0 120 120"></svg>
+            </div>
+
+            <div style="flex:1">
+              <div class="chapterTitle" id="chapterTitle">Kapitel 1 – Lykta av månsken</div>
+              <div class="text" id="chapterText"></div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button id="prevBtn">← Föregående</button>
+            <button class="primary" id="nextBtn">Nästa →</button>
+
+            <button id="speakBtn" title="Läs upp med browserns röst">🔈 Läs upp</button>
+            <button id="stopBtn" title="Stoppa uppläsning">⏹ Stoppa</button>
+
+            <button id="aMinus" title="Mindre text">A−</button>
+            <button id="aPlus" title="Större text">A+</button>
+
+            <button id="contrastBtn" title="Extra kontrast">🌙 Kontrast</button>
+            <button class="night" id="nightBtn" title="Godnatt-läge: tonar ner ljuset">🌙 Godnatt</button>
+
+            <button id="bookmarkBtn" title="Spara kapitel som bokmärke">🔖 Bokmärke</button>
+            <button id="printBtn" title="Skriv ut eller spara som PDF">🖨️ Print/PDF</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="card">
+      <header>
+        <div class="title">
+          <div>
+            <h1 style="font-size:18px;margin:0 0 4px;">Kapitel</h1>
+            <p>Hoppa direkt – eller läs i ordning. Bokmärket sparas i din browser.</p>
+          </div>
+        </div>
+        <div class="chip">✨ Godnattläge</div>
+      </header>
+
+      <div class="side">
+        <div class="panel">
+          <h2>Innehåll</h2>
+          <ul class="list" id="chapterList"></ul>
+          <div class="hint">
+            Tips: ←/→ byter kapitel. L läser upp. S stoppar. G = Godnatt/Vakna. Enter = Nästa.
+          </div>
+          <div class="footerNote">
+            © Du kan fritt ändra namn, kapitel och text i filen.
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 🌙 Slutskärm -->
+    <div class="endingOverlay" id="endingOverlay" role="dialog" aria-modal="true" aria-label="Sov gott">
+      <div class="endingCard">
+        <svg class="moon" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <radialGradient id="m" cx="40%" cy="35%">
+              <stop offset="0" stop-color="rgba(255,211,106,.85)"/>
+              <stop offset="1" stop-color="rgba(255,211,106,.25)"/>
+            </radialGradient>
+          </defs>
+          <circle cx="32" cy="32" r="22" fill="url(#m)"/>
+          <circle cx="42" cy="26" r="5" fill="rgba(0,0,0,.10)"/>
+          <circle cx="26" cy="38" r="4" fill="rgba(0,0,0,.10)"/>
+          <circle cx="22" cy="26" r="3" fill="rgba(0,0,0,.08)"/>
+        </svg>
+
+        <h3>Sov gott, Luna. Sov gott, du. 🌙</h3>
+        <p>Ljuset stannar kvar — också när du blundar. Vill du läsa igen, eller stanna i godnattläge en stund?</p>
+
+        <div class="endingButtons">
+          <button class="primary" id="readAgainBtn">🔁 Läs igen</button>
+          <button class="night" id="stayNightBtn">🌙 Stanna i godnatt</button>
+          <button id="closeEndingBtn">✖ Stäng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chapters = [
+      {
+        title: "Kapitel 1 – Lykta av månsken",
+        illu: "lantern",
+        text: [
+          "I en liten stad där kvällarna doftade av regn och nybakat bröd bodde en flicka som hette Luna.",
+          "Hon hade ett märkligt sätt att se på världen — som om hon visste att något hemligt gömde sig bakom varje hörn.",
+          "En kväll när vinden viskade genom träden hittade Luna en gammal lykta på vinden. Den var inte som andra lyktor. Glaset skimrade svagt, som om det fångat en bit av månskenet.",
+          "När hon tände den hände något oväntat. Skuggorna i rummet rörde sig mjukt, och ett varmt ljus spred sig — inte bara runt henne, utan inuti henne.",
+          "Och plötsligt hörde hon en röst: \"Den här lyktan visar inte vägen ut i världen… den visar vägen till det som behöver hittas.\"",
+          "Luna förstod inte riktigt vad det betydde. Men hon visste att ett äventyr just hade börjat."
+        ]
+      },
+      {
+        title: "Kapitel 2 – Det som tappats bort",
+        illu: "cat",
+        text: [
+          "Nästa kväll tog Luna lyktan med sig ut. Ljusets stråle var mjuk som silke och ändå stark nog att få dimman att se vänlig ut.",
+          "Först lyste lyktan mot marken, som om den letade efter något. Sedan drog den ljuset mot en liten gränd där ingen brukade gå.",
+          "Där satt en grå katt på en trappa och såg förvånad ut. \"Du har hittat mig,\" sa katten, och gäspar så att hela månen nästan kunde trilla in.",
+          "\"Vem är du?\" viskade Luna.",
+          "\"Jag är Murr. Och jag har tappat bort en sak… min modiga känsla. Den föll ur fickan en regnig dag.\"",
+          "Luna kände hur lyktan vibrerade i handen, som om den nickade: Här börjar vi."
+        ]
+      },
+      {
+        title: "Kapitel 3 – Skuggornas bibliotek",
+        illu: "library",
+        text: [
+          "Murr ledde Luna till stadens gamla bibliotek. Dörren var stängd, men lyktan gjorde något märkligt: den lyste på låset tills det såg ut att le.",
+          "Inne bland hyllorna rörde sig skuggor som långsamma fiskar. De var inte farliga — bara blyga.",
+          "\"Här gömmer sig sånt som folk glömt,\" viskade Murr. \"Som borttappade ord, skratt och små drömmar.\"",
+          "Luna höjde lyktan. Ljuset föll på en hylla där en liten burk stod. På etiketten stod: MOD – försiktigt använd.",
+          "Men burken var tom. Någon hade redan öppnat den.",
+          "Och i dammet fanns små fotspår — väldigt små."
+        ]
+      },
+      {
+        title: "Kapitel 4 – Den pyttelilla tjuven",
+        illu: "fjunn",
+        text: [
+          "Fotspåren ledde till ett hål bakom en bok om stjärnor. Luna kröp ner på knä och lyste in.",
+          "Där inne satt en pytteliten varelse med en mössa som såg ut att vara stickad av spindeltråd.",
+          "\"Jag tog det inte för att vara elak,\" pep varelsen. \"Jag tog modet för att jag var rädd.\"",
+          "Luna kände något mjukt i bröstet. \"Vad heter du?\"",
+          "\"Fjun,\" sa varelsen och tittade ner. \"När man är rädd vill man ibland ha dubbelt av allt. Dubbelt mod. Dubbelt ljus.\"",
+          "Murr spände svansen. \"Men då blir det ingen kvar till andra.\"",
+          "Luna höll fram lyktan. \"Vi kan dela. Och du kan få låna modet tills du hittar ditt eget.\""
+        ]
+      },
+      {
+        title: "Kapitel 5 – Lånemod och äkta mod",
+        illu: "key",
+        text: [
+          "Fjun vågade titta på ljuset. Det speglade sig i hans ögon som två små kometer.",
+          "\"Hur hittar man sitt eget mod?\" frågade han.",
+          "Luna tänkte efter. \"Kanske är mod inte något man har hela tiden. Kanske är det något som kommer när man gör en liten sak fast man darrar.\"",
+          "De gick tillsammans genom biblioteket. Murr gick först, med svansen som en fana. Fjun höll sig nära lyktan.",
+          "När de kom fram till dörren stod den plötsligt låst igen. Och nyckeln låg på andra sidan, långt borta på golvet.",
+          "\"Jag kan…\" pep Fjun. Han svalde. \"Jag kan krypa under dörren.\"",
+          "Han darrade, men han gjorde det. Och när han sköt fram nyckeln med sin lilla hand, lyste lyktan starkare än förut."
+        ]
+      },
+      {
+        title: "Kapitel 6 – Ljus som stannar kvar",
+        illu: "moonroad",
+        text: [
+          "Ute i natten kändes luften lättare. Murr blinkade långsamt. \"Min modiga känsla… den är tillbaka.\"",
+          "Fjun såg på sina händer. \"Och jag… jag tror jag hittade min egen också.\"",
+          "Luna höll lyktan nära hjärtat. Hon märkte att ljuset inte bara fanns i glaset längre. Det fanns i deras steg, i deras andetag, i hur de tittade på världen.",
+          "\"Vad visar du nu?\" frågade Luna tyst.",
+          "Lyktan svarade inte med ord. Den lyste bara mot en ny gata, en ny dörr, en ny liten hemlighet.",
+          "Och Luna log, för hon förstod: Äventyret tar inte slut. Det byter bara kapitel."
+        ]
+      }
+    ];
+
+    const el = (id) => document.getElementById(id);
+
+    const illu = el("illu");
+    const chapterText = el("chapterText");
+    const chapterTitle = el("chapterTitle");
+    const chipNum = el("chipNum");
+    const chipTotal = el("chipTotal");
+    const chapterList = el("chapterList");
+
+    const prevBtn = el("prevBtn");
+    const nextBtn = el("nextBtn");
+    const speakBtn = el("speakBtn");
+    const stopBtn = el("stopBtn");
+    const aMinus = el("aMinus");
+    const aPlus = el("aPlus");
+    const contrastBtn = el("contrastBtn");
+    const nightBtn = el("nightBtn");
+    const bookmarkBtn = el("bookmarkBtn");
+    const printBtn = el("printBtn");
+
+    const endingOverlay = el("endingOverlay");
+    const readAgainBtn = el("readAgainBtn");
+    const stayNightBtn = el("stayNightBtn");
+    const closeEndingBtn = el("closeEndingBtn");
+
+    chipTotal.textContent = chapters.length;
+
+    let idx = 0;
+
+    // font size persistence
+    const savedFs = localStorage.getItem("lunaslykta_fs");
+    if(savedFs) document.documentElement.style.setProperty("--fs", savedFs);
+
+    // bookmark
+    const savedIdx = localStorage.getItem("lunaslykta_idx");
+    if(savedIdx !== null){
+      const n = parseInt(savedIdx, 10);
+      if(!Number.isNaN(n) && n >= 0 && n < chapters.length) idx = n;
+    }
+
+    // contrast persistence
+    const savedContrast = localStorage.getItem("lunaslykta_contrast");
+    if(savedContrast === "1") document.body.classList.add("hicontrast");
+
+    // godnatt persistence
+    const savedNight = localStorage.getItem("lunaslykta_night");
+    if(savedNight === "1") setNight(true);
+
+    function setNight(on){
+      document.documentElement.style.setProperty("--veil", on ? "1" : "0");
+      document.documentElement.style.setProperty("--glow", on ? ".55" : "1");
+      localStorage.setItem("lunaslykta_night", on ? "1" : "0");
+      nightBtn.textContent = on ? "☀️ Vakna" : "🌙 Godnatt";
+      nightBtn.title = on ? "Tillbaka till normal-läge" : "Godnatt-läge: tonar ner ljuset";
+    }
+
+    function escapeHtml(s){
+      return s.replaceAll("&", "&amp;")
+              .replaceAll("<", "&lt;")
+              .replaceAll(">", "&gt;")
+              .replaceAll('"', "&quot;")
+              .replaceAll("'", "&#039;");
+    }
+
+    function stopSpeak(){
+      if("speechSynthesis" in window){
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function speakCurrent(){
+      stopSpeak();
+      if(!("speechSynthesis" in window)) {
+        alert("Uppläsning stöds inte i denna webbläsare.");
+        return;
+      }
+      const c = chapters[idx];
+      const utter = new SpeechSynthesisUtterance([c.title, ...c.text].join(". "));
+      utter.lang = "sv-SE";
+      utter.rate = 0.85;
+      utter.pitch = 1.1;
+      utter.volume = 0.9;
+      
+      // Försök att välj en svensk röst
+      const voices = window.speechSynthesis.getVoices();
+      const swedishVoice = voices.find(v => v.lang.startsWith("sv")) || voices.find(v => v.lang.startsWith("en"));
+      if(swedishVoice) utter.voice = swedishVoice;
+      
+      window.speechSynthesis.speak(utter);
+    }
+
+    function showEnding(show){
+      endingOverlay.classList.toggle("show", !!show);
+    }
+
+    function goNext(){
+      if(idx === chapters.length - 1){
+        // sista kapitlet -> slutskärm
+        stopSpeak();
+        showEnding(true);
+        return;
+      }
+      stopSpeak();
+      idx = Math.min(chapters.length - 1, idx + 1);
+      render();
+    }
+
+    function goPrev(){
+      stopSpeak();
+      showEnding(false);
+      idx = Math.max(0, idx - 1);
+      render();
+    }
+
+    function buildList(){
+      chapterList.innerHTML = "";
+      chapters.forEach((c, i)=>{
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.innerHTML = `<span>${c.title}</span><span class="badge">${i+1}</span>`;
+        btn.addEventListener("click", ()=>{
+          stopSpeak();
+          showEnding(false);
+          idx = i;
+          render();
+        });
+        li.appendChild(btn);
+        chapterList.appendChild(li);
+      });
+    }
+
+    function setNextLabel(){
+      if(idx === chapters.length - 1){
+        nextBtn.textContent = "Slut →";
+        nextBtn.title = "Visa sov gott-skärmen";
+      }else{
+        nextBtn.textContent = "Nästa →";
+        nextBtn.title = "";
+      }
+    }
+
+    function renderIllustration(kind){
+      // Enkla, mjuka SVG-illustrationer (120x120)
+      const baseBg = `
+        <defs>
+          <radialGradient id="g" cx="35%" cy="30%">
+            <stop offset="0" stop-color="rgba(138,180,255,.35)"/>
+            <stop offset="1" stop-color="rgba(255,255,255,0)"/>
+          </radialGradient>
+          <radialGradient id="w" cx="50%" cy="45%">
+            <stop offset="0" stop-color="rgba(255,211,106,.55)"/>
+            <stop offset="1" stop-color="rgba(255,211,106,.10)"/>
+          </radialGradient>
+        </defs>
+        <rect x="0" y="0" width="120" height="120" rx="18" fill="rgba(255,255,255,.03)"/>
+        <circle cx="30" cy="28" r="44" fill="url(#g)" opacity=".9"/>
+        <circle cx="92" cy="92" r="54" fill="rgba(124,247,198,.10)"/>
+      `;
+
+      const stars = `
+        <circle cx="18" cy="22" r="1.3" fill="rgba(255,255,255,.55)"/>
+        <circle cx="36" cy="18" r="1" fill="rgba(255,255,255,.40)"/>
+        <circle cx="88" cy="30" r="1.2" fill="rgba(255,255,255,.45)"/>
+        <circle cx="98" cy="58" r="1" fill="rgba(255,255,255,.35)"/>
+        <circle cx="60" cy="12" r="1" fill="rgba(255,255,255,.35)"/>
+      `;
+
+      const lantern = `
+        <!-- hål på sidan -->
+        <circle cx="60" cy="74" r="20" fill="url(#w)" opacity=".95"/>
+        <circle cx="60" cy="74" r="18" fill="rgba(255,211,106,.15)"/>
+        <!-- värme-glow -->
+        <circle cx="60" cy="74" r="24" fill="rgba(255,211,106,.08)" opacity=".7"/>
+        <!-- övre del -->
+        <path d="M48 38c0-8 24-8 24 0" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M46 38c0-10 28-10 28 0" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5" stroke-linecap="round"/>
+        <rect x="50" y="38" width="20" height="6" rx="3" fill="rgba(255,255,255,.25)" stroke="rgba(255,255,255,.4)" stroke-width="1"/>
+        <!-- glas -->
+        <rect x="46" y="44" width="28" height="36" rx="10" fill="rgba(255,211,106,.12)" stroke="rgba(255,211,106,.3)" stroke-width="1.5"/>
+        <path d="M48 46c0-3 20-3 20 0" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+        <!-- ljus inuti -->
+        <ellipse cx="60" cy="65" rx="12" ry="14" fill="rgba(255,211,106,.25)"/>
+        <path d="M54 62c2 4 8 4 12 0" fill="none" stroke="rgba(255,211,106,.7)" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- botten -->
+        <rect x="48" y="80" width="24" height="5" rx="2" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+        <!-- skugga -->
+        <ellipse cx="60" cy="90" rx="18" ry="4" fill="rgba(0,0,0,.15)"/>
+      `;
+
+      const cat = `
+        <!-- kropp -->
+        <ellipse cx="60" cy="78" rx="22" ry="18" fill="rgba(255,255,255,.14)" stroke="rgba(255,255,255,.24)" stroke-width="1.5"/>
+        <!-- huvud -->
+        <circle cx="60" cy="58" r="16" fill="rgba(255,255,255,.14)" stroke="rgba(255,255,255,.24)" stroke-width="1.5"/>
+        <!-- öron -->
+        <path d="M46 48l-6-10 4 6z" fill="rgba(255,255,255,.18)"/>
+        <path d="M74 48l6-10-4 6z" fill="rgba(255,255,255,.18)"/>
+        <!-- ögon -->
+        <circle cx="54" cy="56" r="2.5" fill="rgba(255,211,106,.6)"/>
+        <circle cx="54" cy="56" r="1" fill="rgba(0,0,0,.4)"/>
+        <circle cx="66" cy="56" r="2.5" fill="rgba(255,211,106,.6)"/>
+        <circle cx="66" cy="56" r="1" fill="rgba(0,0,0,.4)"/>
+        <!-- näsa -->
+        <path d="M60 62c1 2-1 2 0 3" fill="rgba(255,211,106,.5)" stroke="rgba(255,211,106,.6)" stroke-width="1.5"/>
+        <!-- mun -->
+        <path d="M60 63c-3 2-4 3-4 4m8 0c-2-1-1-2 4-4" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1" stroke-linecap="round"/>
+        <!-- svans -->
+        <path d="M82 80c8 4 10 12 8 18" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="4" stroke-linecap="round"/>
+        <path d="M82 80c8 4 10 12 8 18" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- skugga -->
+        <ellipse cx="60" cy="96" rx="18" ry="3" fill="rgba(0,0,0,.15)"/>
+      `;
+
+      const library = `
+        <!-- vägg -->
+        <rect x="24" y="40" width="72" height="60" rx="16" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.20)" stroke-width="1.5"/>
+        <!-- hylls-linjer -->
+        <path d="M24 52h72" stroke="rgba(255,255,255,.14)" stroke-width="1"/>
+        <path d="M24 64h72" stroke="rgba(255,255,255,.14)" stroke-width="1"/>
+        <path d="M24 76h72" stroke="rgba(255,255,255,.14)" stroke-width="1"/>
+        <!-- böcker vänster hylla -->
+        <rect x="32" y="54" width="8" height="18" rx="2" fill="rgba(138,180,255,.18)" stroke="rgba(138,180,255,.3)" stroke-width="1"/>
+        <rect x="42" y="54" width="7" height="16" rx="2" fill="rgba(124,247,198,.16)" stroke="rgba(124,247,198,.28)" stroke-width="1"/>
+        <!-- böcker mitten -->
+        <rect x="52" y="56" width="8" height="14" rx="2" fill="rgba(255,211,106,.15)" stroke="rgba(255,211,106,.28)" stroke-width="1"/>
+        <rect x="62" y="54" width="7" height="18" rx="2" fill="rgba(138,180,255,.16)" stroke="rgba(138,180,255,.28)" stroke-width="1"/>
+        <!-- böcker höger hylla -->
+        <rect x="70" y="66" width="8" height="12" rx="2" fill="rgba(124,247,198,.14)" stroke="rgba(124,247,198,.26)" stroke-width="1"/>
+        <rect x="80" y="68" width="6" height="10" rx="2" fill="rgba(255,211,106,.13)" stroke="rgba(255,211,106,.25)" stroke-width="1"/>
+        <!-- dörr -->
+        <rect x="26" y="42" width="10" height="14" rx="3" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/>
+        <!-- lampa -->
+        <circle cx="70" cy="45" r="3" fill="rgba(255,211,106,.25)" stroke="rgba(255,211,106,.4)" stroke-width="1"/>
+      `;
+
+      const fjunn = `
+        <!-- mössa -->
+        <path d="M48 52c8-16 28-16 36 0" fill="rgba(138,180,255,.20)" stroke="rgba(138,180,255,.35)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="78" cy="54" r="2.5" fill="rgba(255,255,255,.4)"/>
+        <!-- huvud -->
+        <circle cx="60" cy="72" r="14" fill="rgba(255,255,255,.13)" stroke="rgba(255,255,255,.22)" stroke-width="1.5"/>
+        <!-- ögon -->
+        <circle cx="54" cy="70" r="2" fill="rgba(255,211,106,.5)"/>
+        <circle cx="54" cy="70" r="0.8" fill="rgba(0,0,0,.5)"/>
+        <circle cx="66" cy="70" r="2" fill="rgba(255,211,106,.5)"/>
+        <circle cx="66" cy="70" r="0.8" fill="rgba(0,0,0,.5)"/>
+        <!-- näsa -->
+        <circle cx="60" cy="74" r="1" fill="rgba(255,211,106,.4)"/>
+        <!-- mun -->
+        <path d="M58 78c2 2 4 2 4 0" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1" stroke-linecap="round"/>
+        <!-- kropp -->
+        <ellipse cx="60" cy="90" rx="12" ry="14" fill="rgba(255,255,255,.11)" stroke="rgba(255,255,255,.20)" stroke-width="1"/>
+        <!-- små händer -->
+        <circle cx="50" cy="88" r="2.5" fill="rgba(255,255,255,.16)"/>
+        <circle cx="70" cy="88" r="2.5" fill="rgba(255,255,255,.16)"/>
+        <!-- små fötter -->
+        <circle cx="56" cy="104" r="2" fill="rgba(255,255,255,.14)"/>
+        <circle cx="64" cy="104" r="2" fill="rgba(255,255,255,.14)"/>
+        <!-- skugga -->
+        <ellipse cx="60" cy="107" rx="12" ry="2.5" fill="rgba(0,0,0,.12)"/>
+      `;
+
+      const key = `
+        <!-- nyckelknopp -->
+        <circle cx="44" cy="74" r="13" fill="rgba(255,211,106,.24)" stroke="rgba(255,211,106,.38)" stroke-width="1.5"/>
+        <circle cx="44" cy="74" r="5" fill="rgba(0,0,0,.12)"/>
+        <circle cx="44" cy="74" r="8" fill="none" stroke="rgba(255,211,106,.2)" stroke-width="0.8"/>
+        <!-- skaft -->
+        <path d="M57 74h34" stroke="rgba(255,211,106,.28)" stroke-width="5" stroke-linecap="round"/>
+        <path d="M57 74h34" stroke="rgba(255,211,106,.50)" stroke-width="3" stroke-linecap="round"/>
+        <!-- tänder -->
+        <path d="M86 74v8" stroke="rgba(255,211,106,.45)" stroke-width="4" stroke-linecap="round"/>
+        <path d="M94 74v6" stroke="rgba(255,211,106,.45)" stroke-width="3" stroke-linecap="round"/>
+        <!-- ljusglow -->
+        <circle cx="44" cy="74" r="15" fill="rgba(255,211,106,.08)" opacity=".6"/>
+        <!-- skugga -->
+        <ellipse cx="68" cy="86" rx="20" ry="3" fill="rgba(0,0,0,.10)"/>
+      `;
+
+      const moonroad = `
+        <!-- måne -->
+        <circle cx="84" cy="32" r="18" fill="rgba(255,211,106,.26)" stroke="rgba(255,211,106,.4)" stroke-width="1"/>
+        <circle cx="90" cy="28" r="4" fill="rgba(0,0,0,.12)"/>
+        <circle cx="76" cy="36" r="3" fill="rgba(0,0,0,.10)"/>
+        <!-- måne-glow -->
+        <circle cx="84" cy="32" r="22" fill="rgba(255,211,106,.10)" opacity=".7"/>
+        <!-- väg-ljus -->
+        <path d="M20 100c18-30 30-40 50-48 16-6 28 2 44 12" fill="none" stroke="rgba(255,211,106,.32)" stroke-width="9" stroke-linecap="round"/>
+        <!-- väg-kant -->
+        <path d="M20 100c18-30 30-40 50-48 16-6 28 2 44 12" fill="none" stroke="rgba(255,211,106,.18)" stroke-width="4" stroke-linecap="round"/>
+        <!-- väg-djup -->
+        <path d="M24 98c16-28 28-38 46-46" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="2" stroke-linecap="round"/>
+        <!-- stjärnor längs vägen -->
+        <circle cx="30" cy="92" r="1.5" fill="rgba(124,247,198,.20)"/>
+        <circle cx="42" cy="82" r="1" fill="rgba(138,180,255,.18)"/>
+        <circle cx="56" cy="70" r="1.2" fill="rgba(124,247,198,.18)"/>
+        <circle cx="72" cy="58" r="1" fill="rgba(255,255,255,.15)"/>
+        <!-- promenadkällorna -->
+        <circle cx="32" cy="86" r="2.5" fill="rgba(124,247,198,.15)"/>
+        <circle cx="48" cy="76" r="2" fill="rgba(138,180,255,.16)"/>
+      `;
+
+      let art = lantern;
+      if(kind === "cat") art = cat;
+      if(kind === "library") art = library;
+      if(kind === "fjunn") art = fjunn;
+      if(kind === "key") art = key;
+      if(kind === "moonroad") art = moonroad;
+
+      illu.innerHTML = baseBg + stars + art;
+    }
+
+    function render(){
+      const c = chapters[idx];
+      chapterTitle.textContent = c.title;
+      chapterText.innerHTML = c.text.map(p => `<p>${escapeHtml(p)}</p>`).join("");
+      chipNum.textContent = (idx + 1);
+
+      renderIllustration(c.illu);
+      setNextLabel();
+
+      prevBtn.disabled = idx === 0;
+
+      // highlight list
+      [...chapterList.querySelectorAll("button")].forEach((b, i)=>{
+        b.style.borderColor = i === idx ? "rgba(124,247,198,.45)" : "rgba(255,255,255,.18)";
+        b.style.background = i === idx ? "linear-gradient(180deg, rgba(124,247,198,.18), rgba(255,255,255,.06))" : "rgba(255,255,255,.07)";
+      });
+    }
+
+    // events
+    prevBtn.addEventListener("click", goPrev);
+    nextBtn.addEventListener("click", goNext);
+
+    speakBtn.addEventListener("click", speakCurrent);
+    stopBtn.addEventListener("click", stopSpeak);
+
+    aMinus.addEventListener("click", ()=>{
+      const cur = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--fs"));
+      const next = Math.max(14, cur - 2);
+      const v = `${next}px`;
+      document.documentElement.style.setProperty("--fs", v);
+      localStorage.setItem("lunaslykta_fs", v);
+    });
+
+    aPlus.addEventListener("click", ()=>{
+      const cur = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--fs"));
+      const next = Math.min(28, cur + 2);
+      const v = `${next}px`;
+      document.documentElement.style.setProperty("--fs", v);
+      localStorage.setItem("lunaslykta_fs", v);
+    });
+
+    contrastBtn.addEventListener("click", ()=>{
+      document.body.classList.toggle("hicontrast");
+      localStorage.setItem("lunaslykta_contrast", document.body.classList.contains("hicontrast") ? "1" : "0");
+    });
+
+    nightBtn.addEventListener("click", ()=>{
+      const on = localStorage.getItem("lunaslykta_night") === "1";
+      setNight(!on);
+    });
+
+    bookmarkBtn.addEventListener("click", ()=>{
+      localStorage.setItem("lunaslykta_idx", String(idx));
+      bookmarkBtn.textContent = "✅ Sparat";
+      setTimeout(()=> bookmarkBtn.textContent = "🔖 Bokmärke", 900);
+    });
+
+    printBtn.addEventListener("click", ()=> window.print());
+
+    // ending overlay buttons
+    readAgainBtn.addEventListener("click", ()=>{
+      showEnding(false);
+      idx = 0;
+      render();
+    });
+    stayNightBtn.addEventListener("click", ()=>{
+      setNight(true);
+      showEnding(false);
+    });
+    closeEndingBtn.addEventListener("click", ()=> showEnding(false));
+
+    // keyboard shortcuts
+    window.addEventListener("keydown", (e)=>{
+      const key = e.key.toLowerCase();
+
+      if(e.key === "ArrowLeft") prevBtn.click();
+      if(e.key === "ArrowRight") nextBtn.click();
+
+      if(key === "l") speakBtn.click();
+      if(key === "s") stopBtn.click();
+      if(key === "g") nightBtn.click();
+
+      if(e.key === "Enter"){
+        if(endingOverlay.classList.contains("show")){
+          readAgainBtn.click();
+        }else{
+          nextBtn.click();
+        }
+      }
+      if(e.key === "Escape"){
+        showEnding(false);
+      }
+    });
+
+    // init
+    buildList();
+    render();
+  </script>
+</body>
+</html>
