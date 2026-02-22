@@ -452,6 +452,55 @@
       margin-bottom:16px;
     }
 
+    .language-switcher{
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 1000;
+      display: flex;
+      gap: 8px;
+      background: rgba(0,0,0,.2);
+      backdrop-filter: blur(10px);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.14);
+    }
+
+    .language-switcher a{
+      color: rgba(255,255,255,.7);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all .2s ease;
+      cursor: pointer;
+    }
+
+    .language-switcher a:hover{
+      color: rgba(255,255,255,.95);
+      background: rgba(255,255,255,.08);
+    }
+
+    .language-switcher a.active{
+      color: var(--accent);
+      background: rgba(124,247,198,.15);
+      border: 1px solid rgba(124,247,198,.3);
+    }
+
+    @media (max-width: 600px){
+      .language-switcher{
+        top: 8px;
+        right: 8px;
+        padding: 6px 10px;
+      }
+
+      .language-switcher a{
+        font-size: 12px;
+        padding: 3px 6px;
+      }
+    }
+
     @media print {
       body {
         background: white;
@@ -536,6 +585,11 @@
 </head>
 
 <body>
+  <div class="language-switcher">
+    <a href="index.html" class="active">SV</a>
+    <a href="index-en.html">EN</a>
+  </div>
+
   <section class="coverPage" aria-label="Omslag">
     <div class="coverFrame">
       <img class="coverImg" src="Sagobilder/UnderSammaStjärna.png" alt="Omslagsbild: Under samma Stjärna" />
