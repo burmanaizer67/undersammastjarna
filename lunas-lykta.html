@@ -1,0 +1,1219 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Luna's Lykta</title>
+  <style>
+    :root{
+      --bg: #0b1020;
+      --card: rgba(255,255,255,.08);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --accent: #7cf7c6;
+      --accent2: #8ab4ff;
+      --warm: #ffd36a;
+      --shadow: 0 18px 45px rgba(0,0,0,.45);
+      --radius: 22px;
+      --font: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      --fs: 18px;
+      --page-ar: 2 / 3;
+      --veil: 0;
+      --glow: 1;
+    }
+
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(138,180,255,.35), transparent 55%),
+        radial-gradient(1000px 700px at 80% 30%, rgba(124,247,198,.22), transparent 55%),
+        radial-gradient(900px 600px at 50% 90%, rgba(255,255,255,.12), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:18px;
+      position:relative;
+      overflow-x:hidden;
+      padding-top:40px;
+      padding-bottom:40px;
+    }
+
+    .app{
+      width:min(900px, 100%);
+      display:none;
+      grid-template-columns: 1fr;
+      gap:16px;
+      position:relative;
+      z-index:2;
+      margin: 0 auto 16px;
+    }
+    
+    .app.visible{
+      display: grid;
+    }
+
+    .card{
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+      padding:28px;
+      aspect-ratio: var(--page-ar);
+      display:flex;
+      flex-direction:column;
+    }
+
+    .storyContent{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .chapterMedia{
+      border-radius: calc(var(--radius) - 6px);
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.03);
+      padding:18px;
+      display:flex;
+      align-items:flex-start;
+      position:relative;
+      overflow:hidden;
+      aspect-ratio: var(--page-ar);
+      box-shadow: 0 14px 30px rgba(0,0,0,.25);
+    }
+
+    .chapterMedia.hasImage{
+      background-image: var(--chapter-image);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-color: rgba(0,0,0,.08);
+    }
+
+    .chapterMedia.hasImage.whiteBands{
+      background-color: #fff;
+      background-image:
+        linear-gradient(180deg, #fff 0 12%, rgba(255,255,255,0) 12% 88%, #fff 88% 100%),
+        var(--chapter-image);
+      background-size: 100% 100%, contain;
+      background-repeat: no-repeat, no-repeat;
+      background-position: center, center;
+    }
+
+    .chapterMedia:not(.hasImage){
+      aspect-ratio: auto;
+      padding:0;
+      border:none;
+      box-shadow:none;
+      background: transparent;
+    }
+
+    .chapterOverlay{
+      width:min(70%, 520px);
+      padding:14px 16px;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      backdrop-filter: none;
+    }
+
+    .chapterMedia.hasImage .chapterOverlay{
+      position:absolute;
+      top:16px;
+      left:16px;
+    }
+
+    .chapterMedia.hasImage.whiteBands .chapterOverlay{
+      top:6px;
+      left:8px;
+      right:8px;
+      width:auto;
+      text-align:center;
+      color:#0b1020;
+      text-shadow:none;
+    }
+
+    .chapterMedia.hasImage.whiteBands .text{
+      color:#0b1020;
+      text-shadow:none;
+    }
+
+    .chapterMedia.tightLines .text{
+      font-size: calc(var(--fs) * 1.1);
+      line-height: 1.45;
+    }
+
+    .chapterMedia.tightLines .chapterOverlay{
+      padding-top: 72px;
+    }
+
+    .chapterMedia.hasImage .chapterOverlay.right{
+      left:auto;
+      right:0;
+      width: min(55%, 420px);
+      text-align: right;
+    }
+
+    .chapterBottom{
+      position:absolute;
+      left:16px;
+      bottom:16px;
+      width:min(70%, 520px);
+      white-space: pre-wrap;
+    }
+
+    .chapterMedia.hasImage.whiteBands .chapterBottom{
+      left:8px;
+      right:8px;
+      bottom:6px;
+      width:auto;
+      text-align:center;
+      color:#0b1020;
+      text-shadow:none;
+    }
+
+    .chapterMedia.tightLines .chapterBottom{
+      line-height: 1.15;
+    }
+
+    .chapterMedia.hasImage .text{
+      color: rgba(255,255,255,.95);
+    }
+
+    .chapterMedia:not(.hasImage) .chapterOverlay{
+      width:auto;
+      padding:0;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      backdrop-filter: none;
+      position: static;
+    }
+
+    .chapterMedia:not(.hasImage) .chapterBottom{
+      position: static;
+      width:auto;
+      display:none;
+    }
+
+    .coverPage{
+      width:min(900px, 100%);
+      margin:0 auto 16px;
+      display: block;
+    }
+    
+    .coverPage.hidden{
+      display: none;
+    }
+
+    .coverFrame{
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+      padding:28px;
+      aspect-ratio: var(--page-ar);
+      position:relative;
+      background-color: rgba(0,0,0,.12);
+    }
+
+    .coverImg{
+      width:100%;
+      height:100%;
+      object-fit: contain;
+      object-position: center;
+      border-radius: calc(var(--radius) - 6px);
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 14px 30px rgba(0,0,0,.25);
+      display:block;
+    }
+
+    .coverOverlay{
+      position:absolute;
+      inset: auto 18px 18px 18px;
+      padding:12px 14px 14px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.55));
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(6px);
+    }
+
+    .coverTitle{
+      font-size: 30px;
+      margin:0 0 6px;
+      letter-spacing:.3px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .coverSubtitle{
+      font-size: 14px;
+      color: var(--muted);
+      margin:0 0 12px;
+      font-weight: 400;
+    }
+
+    @media (max-width: 600px){
+      :root{
+        --fs: 16px;
+        --page-ar: auto;
+      }
+      
+      body{
+        padding: 12px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+      }
+      
+      .app{
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      
+      .card{ 
+        padding: 16px;
+        aspect-ratio: auto;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .storyContent{
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .coverPage{
+        margin-bottom: 12px;
+      }
+      
+      .coverFrame{ 
+        padding: 12px;
+        aspect-ratio: auto;
+      }
+      
+      .coverImg{
+        max-height: 400px;
+        border-radius: calc(var(--radius) - 4px);
+      }
+      
+      .coverTitle{ 
+        font-size: 24px;
+      }
+      
+      .coverSubtitle{
+        font-size: 13px;
+      }
+      
+      .coverOverlay{ 
+        inset: auto 10px 10px 10px;
+        padding: 10px 12px;
+      }
+      
+      h1, .story-title, .titleInImage {
+        font-size: 22px;
+        margin-bottom: 12px;
+      }
+      
+      .subtitle{
+        font-size: 13px;
+        margin-bottom: 12px;
+      }
+      
+      .chapterMedia{
+        border-radius: calc(var(--radius) - 4px);
+        padding: 0;
+        aspect-ratio: auto;
+        min-height: 250px;
+        background-size: contain !important;
+        background-position: center !important;
+        border: none;
+        box-shadow: none;
+      }
+      
+      .chapterMedia.hasImage{
+        min-height: 280px;
+      }
+      
+      .chapterOverlay{
+        position: static !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: none;
+        background: transparent !important;
+        border: none !important;
+        backdrop-filter: none !important;
+        display: none;
+      }
+      
+      .chapterOverlay.right{
+        width: 100%;
+        text-align: left;
+      }
+      
+      .chapterBottom{
+        position: static !important;
+        width: 100% !important;
+        max-width: none;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        padding: 16px 0 0 0 !important;
+        margin-top: 12px;
+        color: rgba(255,255,255,.92) !important;
+        text-shadow: none !important;
+      }
+      
+      .chapterMedia.hasImage .chapterOverlay{
+        display: none;
+      }
+      
+      .chapterMedia.hasImage.whiteBands .chapterOverlay{
+        display: none;
+      }
+      
+      .chapterMedia.hasImage.whiteBands .chapterBottom{
+        color: rgba(255,255,255,.92) !important;
+        text-shadow: none !important;
+      }
+      
+      .text{
+        font-size: 16px;
+        line-height: 1.75;
+        margin-bottom: 16px;
+      }
+    }
+
+    h1{
+      font-size: 28px;
+      margin:0 0 20px;
+      letter-spacing:.2px;
+    }
+
+    .story-title{
+      font-size: 32px;
+      margin:0 0 10px;
+      letter-spacing:.3px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .titleInImage{
+      font-size: 22px;
+      margin: 0 0 10px;
+      letter-spacing: .2px;
+      font-weight: 700;
+      color: rgba(255,255,255,.95);
+      text-shadow: 0 2px 8px rgba(0,0,0,.55);
+    }
+
+    .chapterMedia.hasImage.whiteBands .titleInImage{
+      color:#0b1020;
+      text-shadow:none;
+    }
+
+    .subtitle{
+      font-size: 14px;
+      color: var(--muted);
+      margin:0 0 16px;
+      font-weight: 400;
+    }
+
+    .text{
+      font-size: var(--fs);
+      line-height: 1.8;
+      color: rgba(255,255,255,.92);
+      margin:0 0 24px;
+      white-space: pre-wrap;
+    }
+
+    .language-switcher{
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 1000;
+      display: flex;
+      gap: 8px;
+      background: rgba(0,0,0,.2);
+      backdrop-filter: blur(10px);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.14);
+    }
+
+    .language-switcher a{
+      color: rgba(255,255,255,.7);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all .2s ease;
+      cursor: pointer;
+    }
+
+    .language-switcher a:hover{
+      color: rgba(255,255,255,.95);
+      background: rgba(255,255,255,.08);
+    }
+
+    .language-switcher a.active{
+      color: var(--accent);
+      background: rgba(124,247,198,.15);
+      border: 1px solid rgba(124,247,198,.3);
+    }
+
+    @media (max-width: 600px){
+      .language-switcher{
+        top: 8px;
+        right: 8px;
+        padding: 6px 10px;
+      }
+
+      .language-switcher a{
+        font-size: 12px;
+        padding: 3px 6px;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      
+      .coverPage {
+        display: none;
+      }
+      
+      .app {
+        gap: 0;
+        margin: 0;
+      }
+      
+      .card, .coverFrame {
+        background: white;
+        border: none;
+        box-shadow: none;
+        backdrop-filter: none;
+        padding: 0;
+        page-break-after: always;
+        break-after: page;
+      }
+      
+      .storyContent {
+        gap: 0;
+      }
+      
+      h1, .story-title, .titleInImage {
+        color: #000;
+        text-shadow: none;
+        background: none;
+        -webkit-background-clip: unset;
+        -webkit-text-fill-color: unset;
+        background-clip: unset;
+      }
+      
+      .text, .subtitle {
+        color: #000;
+        text-shadow: none;
+      }
+      
+      .chapterMedia {
+        border: none;
+        background: white;
+        box-shadow: none;
+        padding: 0;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      
+      .chapterMedia.hasImage {
+        background-color: white;
+      }
+      
+      .chapterMedia.hasImage.whiteBands {
+        background-color: white;
+        background-image: none;
+      }
+      
+      .chapterOverlay {
+        background: transparent;
+        border: none;
+        backdrop-filter: none;
+      }
+      
+      .chapterMedia.hasImage .chapterOverlay {
+        position: static;
+        backdrop-filter: none;
+      }
+      
+      .chapterBottom {
+        position: static;
+        color: #000;
+        text-shadow: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="language-switcher">
+    <a href="luna.html" class="active">SV</a>
+    <a href="luna-en.html">EN</a>
+  </div>
+
+  <section class="coverPage" aria-label="Omslag">
+    <div class="coverFrame">
+      <img class="coverImg" src="Lunas Bilder/LunasLykta.png" alt="Omslagsbild: Luna's Lykta" />
+      <div class="coverOverlay">
+        <h1 class="coverTitle">Luna's Lykta</h1>
+        <p class="coverSubtitle">En saga om mod</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="app" id="story">
+    <div class="card">
+      <div class="storyContent">
+        <h1 id="title">Kapitel 1</h1>
+        <div class="chapterMedia" id="chapterMedia">
+          <div class="chapterOverlay" id="chapterOverlay">
+            <div class="text" id="text"></div>
+          </div>
+          <div class="text chapterBottom" id="chapterBottom"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chapters = [
+      {
+        title: "",
+        image: "Lunas%20Bilder/Lyktan.png",
+        bottomLines: 4,
+        text: `En kväll när Noah tittade upp mot månen såg han något blinka i trädgården.
+I gräset stod en liten lykta.
+Han smög tyst ut och tog upp den — och då 
+hörde han en mjuk röst: 
+"Noah — jag är Luna, 
+väktaren av nattens stigar.
+Jag ser till att stjärnljuset hittar rätt väg 
+så att alla kan känna sig trygga i mörkret."
+Lyktan glödde varmt.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+"Men nu har stigarnas ljus slocknat… 
+och jag behöver din hjälp att tända dem igen."
+Lyktan skimrade.
+"Du är utvald för att du har ett modigt hjärta.
+Du ser sådant som andra ibland missar — och du vågar ta små steg framåt."
+Noah höll lyktan försiktigt.
+
+Äventyret hade börjat.`
+      },
+      {
+        title: "",
+        image: "Lunas%20Bilder/Stigar.png",
+        text: `Lyktan började lysa starkare i Noahs händer.
+
+Ett mjukt, gyllene sken spred sig — och plötsligt syntes en glittrande karta sväva i luften framför honom.
+
+Små stigar slingrade sig genom skogar, över vatten och genom mjuk dimma.
+
+Det kändes som om något spännande var på väg att börja.
+
+"Följ ljuset," viskade Luna.
+
+"Du ska hitta tre gnistor av mod — små ljus som har tappat sin väg."
+
+Noah tittade noga på kartan.
+
+Hans hjärta slog snabbare — inte av rädsla, utan av förväntan.
+
+"Vad händer när jag hittar dem?" frågade han tyst.
+
+"Då tänds nattens stigar igen," svarade Luna varmt.
+
+"Och fler kommer att hitta trygghet i mörkret."
+
+Noah tog ett djupt andetag.
+
+Han stod inför ett stort äventyr — och världen väntade på honom.
+
+Lyktan blinkade mjukt — redo att visa vägen.
+
+Han log lite.
+
+Äventyret hade börjat på riktigt.`
+      },
+      {
+        title: "",
+        image: "Lunas%20Bilder/ÄventyretsBörjan.png",
+        titleInImage: true,
+        text: ``
+      },
+      {
+        title: "",
+        image: "Lunas%20Bilder/DenViskandeSkogen.png",
+        titleInImage: true,
+        text: ``
+      },
+      {
+        title: "",
+        image: "Lunas%20Bilder/Nattsök.png",
+        titleInImage: true,
+        bottomLines: 3,
+        text: `Noah följde kartans mjuka ljus tills han stod vid kanten av en skog. Träden reste sig höga och stilla, och det lät som om löven viskade hemligheter till varandra.
+
+Sam gick tätt vid hans sida, nosade i luften och viftade försiktigt på svansen — som om han också kunde känna att något magiskt fanns där inne. En smal stig slingrade sig fram mellan stammarna.
+
+Noah stannade ett ögonblick. "Jag tror vi ska gå här," viskade han. Sam tog ett steg först, som för att visa vägen. Noah log och följde efter.
+
+För varje steg de tog lyste lyktan lite starkare och kastade mjuka skuggor på marken. Skogen kändes vänlig, men också full av hemligheter — som om den lyssnade.
+
+Noah drog ett lugnt andetag. "Vi är på rätt väg," sa han mjukt. Sam gick tryggt bredvid honom.
+
+Tillsammans fortsatte de genom den viskande skogen, djupare in i nattens äventyr.`
+      },
+      {
+        title: "",
+        image: "Lunas%20Bilder/Stigfinnarna.png",
+        titleInImage: true,
+        text: ``
+      },
+      {
+        title: "",
+        image: "Lunas%20Bilder/FörstaGnistan.png",
+        titleInImage: true,
+        text: `Stigen ledde Noah och Sam fram till en spegelblank sjö.
+
+Vattnet låg helt stilla, som om det sov under nattens stjärnor.
+
+På ytan stack runda stenar upp — som en väg över till andra sidan.
+
+Mitt ute över sjön svävade ett mjukt, gyllene ljus.
+
+Noah stannade och tittade.
+
+"Är det… en gnista?" viskade han.
+
+"Ja," svarade Luna mjukt.
+"Den första gnistan av mod väntar på dig."
+
+Det pirrade i magen.
+
+"Vi klarar det, Sam," sa Noah.
+
+Sam viftade på svansen och gick tätt vid hans sida.
+
+Noah satte foten på första stenen.
+
+Den låg stadigt.
+
+Sedan nästa.
+
+Och nästa.
+
+Lyktan lyste lite starkare för varje steg.
+
+När de nådde mitten sträckte Noah försiktigt fram handen.
+
+Gnistan darrade som ett litet hjärtslag — och flög sedan mjukt in i lyktan.
+
+Ett varmt sken spred sig över sjön.
+
+Små ringar dansade ut över vattnet.
+
+Noah log stort.
+
+"Vi gjorde det."
+
+Sam gav ett glatt skall.
+
+Äventyret fortsatte.`
+      },
+      {
+        title: "",
+        image: "Lunas%20Bilder/Sjön.png",
+        titleInImage: true,
+        text: ``
+      },
+      {
+        title: "Dimdalen",
+        image: "Lunas%20Bilder/Dimman.png",
+        titleInImage: true,
+        tightLines: true,
+        text: `
+Stigen ledde Noah och Sam vidare tills marken täcktes av mjuk, skimrande dimma.
+Den glittrade svagt i lyktans sken — som om små stjärnor hade gömt sig där.
+Snart kunde Noah bara se några steg framför sig. Han stannade.
+"Jag vet inte riktigt vart vi ska," viskade han.
+Sam höjde nosen och sniffade försiktigt i luften.
+Sedan tog han ett lugnt steg fram — och såg tillbaka på Noah, som för att säga: följ mig.
+
+Noah log lite och gick efter.
+Lyktan lyste varmt i hans händer.
+"Följ ljuset och lita på vägen," viskade Luna.
+Dimman rörde sig mjukt runt dem, öppnade små gångar som försvann bakom deras steg.
+
+Det kändes som om skogen höll andan.
+Plötsligt började något skimra längre fram — ett gyllene ljus som svävade stilla.
+"En gnista," viskade Noah. Sam stannade bredvid honom.
+Noah gick fram och sträckte försiktigt ut handen. Gnistan flög mjukt in i lyktan.
+
+Ljuset blev klarare — och dimman glödde svagt innan den långsamt lättade. Noah kände sig lugn och stark. "Bra jobbat, Sam," sa han mjukt. Sam viftade glatt på svansen.
+
+Tillsammans fortsatte de vidare genom nattens äventyr.`
+      },
+      {
+        title: "",
+        image: "Lunas%20Bilder/Dimdalen.png",
+        titleInImage: true,
+        text: ``
+      },
+      {
+        title: "Nattens väktare",
+        image: "Lunas%20Bilder/StarryNight.png",
+        titleInImage: true,
+        text: `Stigen förde Noah och Sam upp på en öppen plats där himlen kändes närmare än någonsin.
+
+Stjärnorna glittrade klart ovanför dem.
+
+Mitt på marken stod en båge av mjukt stjärnljus — som en port som ännu inte var öppen.
+
+Framför den satt en stor, stilla uggla med silverglänsande fjädrar.
+
+"Välkommen, Noah," sa ugglan med lugn röst.
+"Jag är väktaren av nattens stig."
+
+Noah kände hur hjärtat slog lite snabbare, men Sam stod tryggt vid hans sida.
+
+"Du har kommit långt," fortsatte väktaren.
+"Men den sista gnistan visar sig bara för den som vågar tro på sitt eget ljus."
+
+Noah såg sig omkring.
+
+Det var stilla.
+
+"Hur gör jag?" viskade han.
+
+Ugglan blinkade långsamt.
+
+"Stå still. Andas. Och lyssna."
+
+Noah tog ett djupt andetag.
+
+Lyktan började glöda — först svagt, sedan starkare.
+
+Plötsligt tändes ett mjukt gyllene ljus framför honom, som om det kom från luften själv.
+
+Den sista gnistan svävade fram.
+
+Noah sträckte försiktigt fram handen.
+
+Gnistan virvlade mjukt och flög in i lyktan.
+
+Ljuset blev klart och varmt — starkare än tidigare.
+
+Ugglan nickade.
+
+"Du bär modet inom dig."
+
+Stjärnporten började skimra.
+
+Äventyret var redo för sitt sista steg.`
+      },
+      {
+        title: "",
+        image: "Lunas%20Bilder/NattensVäktare.png",
+        titleInImage: true,
+        text: ``
+      },
+      {
+        title: "Stjärnporten öppnas",
+        image: "Lunas%20Bilder/Natten.png",
+        titleInImage: true,
+        text: `Stjärnporten började lysa starkare, som om den vaknade till liv.
+
+De tre gnistorna i lyktan glödde varmt och klart.
+
+Noah höll den försiktigt framför sig.
+
+"Du är redo," viskade Luna mjukt.
+
+Noah tog ett steg fram — med Sam tätt vid sin sida.
+
+När lyktan närmade sig porten flöt ljuset ut i luften som gyllene strålar.
+
+Porten öppnade sig långsamt.
+
+Bakom den spred sig ett hav av stjärnljus som rörde sig mjukt som en stilla vind.
+
+Gnistorna lyfte ur lyktan och svävade upp mot himlen.
+
+En efter en flög de iväg — och tände nattens stigar igen.
+
+Skogar, sjöar och dalar fylldes av ett varmt sken.
+
+Det kändes som om hela världen log.
+
+Noah stod stille och kände hur hjärtat fylldes av något stort och lugnt på samma gång.
+
+"Du gjorde det," sa Luna.
+
+"Du vågade — även när du inte visste exakt hur."
+
+Sam satte sig bredvid honom och lutade sig mjukt mot hans ben.
+
+Noah klappade honom och log.
+
+"Vi gjorde det tillsammans."
+
+Ljuset runt dem blev mjukare.
+
+Stjärnporten slöt sig sakta, som om den visste att allt var i balans igen.`
+      },
+      {
+        title: "",
+        image: "Lunas%20Bilder/Porten.png",
+        titleInImage: true,
+        text: ``
+      },
+      {
+        title: "",
+        image: "Lunas%20Bilder/Hemma.png",
+        titleInImage: true,
+        text: ``
+      },
+      {
+        title: "🌙 Epilog — Hemma igen",
+        image: "Lunas%20Bilder/Tillbaka.png",
+        titleInImage: true,
+        text: `När Noah öppnade ögonen var han tillbaka i sitt rum.
+
+Lyktan vilade stilla på nattduksbordet och glödde svagt — som om den log.
+
+Sam låg hoprullad bredvid sängen och sov lugnt.
+
+Noah kröp ner under täcket.
+
+Han visste nu att nattens stigar lyste igen — tack vare hans mod.
+
+Även när han själv hade känt sig lite rädd hade han fortsatt framåt.
+
+Och någonstans där ute kunde barn som varit mörkrädda nu känna sig tryggare, eftersom nattljuset var tillbaka.
+
+Noah drog täcket lite närmare hakan och log.
+
+Han kände sig trygg.
+
+Inte för att allt alltid var lätt —
+
+utan för att han visste att modet bodde inom honom.
+
+Och att han aldrig var ensam.
+
+Utanför blinkade stjärnorna mjukt, som om de viskade:
+
+"Tack."`
+      },
+      {
+        title: "",
+        image: "Lunas%20Bilder/FöljDittHjärta.png",
+        titleInImage: true,
+        text: ``
+      }
+    ];
+
+    const el = (id) => document.getElementById(id);
+    const title = el("title");
+    const text = el("text");
+    const chapterMedia = el("chapterMedia");
+    const chapterBottom = el("chapterBottom");
+    const storyContent = document.querySelector(".storyContent");
+    const swipeSurface = document.querySelector("#story .card");
+    const coverPage = document.querySelector(".coverPage");
+    const appSection = document.querySelector("#story");
+
+    let idx = 0;
+    let lastSwipeAt = 0;
+    let pointerStartX = 0;
+    let pointerStartY = 0;
+    let pointerActive = false;
+    let storyStarted = false;
+
+    const SWIPE_THRESHOLD = 60;
+    const SWIPE_COOLDOWN = 450;
+    
+    function startStory(){
+      if(storyStarted) return;
+      storyStarted = true;
+      coverPage.classList.add("hidden");
+      appSection.classList.add("visible");
+      render();
+    }
+
+    function stopSpeak(){
+      if("speechSynthesis" in window){
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function speakCurrent(){
+      stopSpeak();
+      if(!("speechSynthesis" in window)) {
+        alert("Uppläsning stöds inte i denna webbläsare.");
+        return;
+      }
+      const c = chapters[idx];
+      const utter = new SpeechSynthesisUtterance(c.title + ". " + c.text);
+      utter.lang = "sv-SE";
+      utter.rate = 0.75;
+      utter.pitch = 0.95;
+      utter.volume = 1.0;
+      
+      const voices = window.speechSynthesis.getVoices();
+      const swedishVoice = voices.find(v => v.lang.startsWith("sv")) || voices.find(v => v.lang.startsWith("en"));
+      if(swedishVoice) utter.voice = swedishVoice;
+      
+      window.speechSynthesis.speak(utter);
+    }
+
+    function goNext(){
+      if(idx === chapters.length - 1) return;
+      stopSpeak();
+      idx++;
+      render();
+    }
+
+    function goPrev(){
+      if(idx === 0) return;
+      stopSpeak();
+      idx--;
+      render();
+    }
+
+    function render(){
+      const c = chapters[idx];
+      chapterOverlay.classList.toggle("right", c.overlay === "right");
+      title.textContent = c.title;
+      if(c.titleInImage && c.image){
+        if(!chapterOverlay.contains(title)){
+          chapterOverlay.insertBefore(title, text);
+        }
+        title.classList.add("titleInImage");
+      } else {
+        if(!storyContent.contains(title)){
+          storyContent.insertBefore(title, chapterMedia);
+        }
+        title.classList.remove("titleInImage");
+      }
+      if(c.topText && c.bottomText){
+        text.textContent = c.topText;
+        chapterBottom.textContent = c.bottomText;
+        chapterBottom.style.display = "block";
+      } else if(c.image && c.bottomLines){
+        const lines = c.text.split("\n");
+        const nonEmptyIdx = lines
+          .map((line, i) => (line.trim() ? i : -1))
+          .filter(i => i !== -1);
+        const lastN = nonEmptyIdx.slice(-c.bottomLines);
+        const bottomText = lastN.map(i => lines[i]).join("\n");
+        lastN.forEach(i => { lines[i] = ""; });
+        const topText = lines.join("\n").trim();
+        text.textContent = topText;
+        chapterBottom.textContent = bottomText;
+        if(c.bottomBold){
+          chapterBottom.innerHTML = "";
+          const strong = document.createElement("strong");
+          strong.textContent = bottomText;
+          chapterBottom.appendChild(strong);
+        }
+        chapterBottom.style.display = "block";
+      } else if(c.image && idx === 0){
+        const lines = c.text.split("\n");
+        const nonEmptyIdx = lines
+          .map((line, i) => (line.trim() ? i : -1))
+          .filter(i => i !== -1);
+        const lastTwo = nonEmptyIdx.slice(-2);
+        const bottomText = lastTwo.map(i => lines[i]).join("\n");
+        lastTwo.forEach(i => { lines[i] = ""; });
+        const topText = lines.join("\n").trim();
+        text.textContent = topText;
+        chapterBottom.textContent = bottomText;
+        chapterBottom.style.display = "block";
+      } else {
+        text.textContent = c.text;
+        chapterBottom.textContent = "";
+        chapterBottom.style.display = "none";
+      }
+      if(c.image){
+        chapterMedia.style.setProperty("--chapter-image", `url(${c.image})`);
+        chapterMedia.classList.add("hasImage");
+        chapterMedia.classList.toggle("whiteBands", c.whiteBands === true);
+        chapterMedia.classList.toggle("tightLines", c.tightLines === true);
+      } else {
+        chapterMedia.style.removeProperty("--chapter-image");
+        chapterMedia.classList.remove("hasImage");
+        chapterMedia.classList.remove("whiteBands");
+        chapterMedia.classList.remove("tightLines");
+      }
+    }
+
+    window.addEventListener("keydown", (e)=>{
+      if(e.key === "ArrowLeft") goPrev();
+      if(e.key === "ArrowRight") goNext();
+      if(e.key.toLowerCase() === "l") speakCurrent();
+      if(e.key.toLowerCase() === "s") stopSpeak();
+    });
+
+    swipeSurface.addEventListener("wheel", (e)=>{
+      const now = Date.now();
+      if(now - lastSwipeAt < SWIPE_COOLDOWN) return;
+      if(Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      if(Math.abs(e.deltaX) < 40) return;
+      e.preventDefault();
+      lastSwipeAt = now;
+      if(e.deltaX > 0){
+        goNext();
+      } else {
+        goPrev();
+      }
+    }, { passive: false });
+
+    swipeSurface.addEventListener("pointerdown", (e)=>{
+      pointerActive = true;
+      pointerStartX = e.clientX;
+      pointerStartY = e.clientY;
+      swipeSurface.setPointerCapture(e.pointerId);
+    });
+
+    swipeSurface.addEventListener("pointermove", (e)=>{
+      if(!pointerActive) return;
+      const dx = e.clientX - pointerStartX;
+      const dy = e.clientY - pointerStartY;
+      if(Math.abs(dx) < SWIPE_THRESHOLD) return;
+      if(Math.abs(dx) <= Math.abs(dy)) return;
+      pointerActive = false;
+      swipeSurface.releasePointerCapture(e.pointerId);
+      if(dx < 0){
+        goNext();
+      } else {
+        goPrev();
+      }
+    });
+
+    swipeSurface.addEventListener("pointerup", ()=>{ pointerActive = false; });
+    swipeSurface.addEventListener("pointercancel", ()=>{ pointerActive = false; });
+
+    swipeSurface.addEventListener("click", (e) => {
+      if(!storyStarted) return;
+      const rect = swipeSurface.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const halfWidth = rect.width / 2;
+      
+      if(clickX < halfWidth){
+        goPrev();
+      } else {
+        goNext();
+      }
+    });
+    
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isSwiping = false;
+    
+    swipeSurface.addEventListener("touchstart", (e) => {
+      if(!storyStarted) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      isSwiping = false;
+    });
+    
+    swipeSurface.addEventListener("touchmove", (e) => {
+      if(!storyStarted) return;
+      const touchCurrentX = e.touches[0].clientX;
+      const touchCurrentY = e.touches[0].clientY;
+      const diffX = Math.abs(touchCurrentX - touchStartX);
+      const diffY = Math.abs(touchCurrentY - touchStartY);
+      
+      if(diffX > diffY && diffX > 30){
+        isSwiping = true;
+        e.preventDefault();
+      }
+    }, { passive: false });
+    
+    swipeSurface.addEventListener("touchend", (e) => {
+      if(!storyStarted) return;
+      const touchEndX = e.changedTouches[0].clientX;
+      const diff = touchStartX - touchEndX;
+      
+      if(isSwiping && Math.abs(diff) > 50){
+        if(diff > 0){
+          goNext();
+        } else {
+          goPrev();
+        }
+      } 
+      else if(Math.abs(diff) < 10){
+        const rect = swipeSurface.getBoundingClientRect();
+        const tapX = touchEndX - rect.left;
+        const halfWidth = rect.width / 2;
+        
+        if(tapX < halfWidth){
+          goPrev();
+        } else {
+          goNext();
+        }
+      }
+      
+      isSwiping = false;
+    });
+
+    coverPage.addEventListener("click", startStory);
+    coverPage.addEventListener("touchend", (e) => {
+      e.preventDefault();
+      startStory();
+    });
+    
+    window.addEventListener("keydown", (e) => {
+      if(!storyStarted && (e.key === "Enter" || e.key === " ")){
+        e.preventDefault();
+        startStory();
+      }
+    });
+  </script>
+</body>
+</html>
